@@ -4,7 +4,8 @@
 
 <Workspace>
 	<Local Expanded="Yes">
-		<Model Expanded="Yes" ID="{D20E4E65-13C1-4A50-BF88-14751A05A988}" Name="odeon" Selected="Yes" Type="{5F45F978-C4F3-4E35-A3FC-AF3318663A0F}" URL="odeon.ldm"/>
+		<Model Expanded="Yes" ID="{D20E4E65-13C1-4A50-BF88-14751A05A988}" Loaded="No" Name="odeon" Type="{5F45F978-C4F3-4E35-A3FC-AF3318663A0F}" URL="odeon.ldm"/>
+		<Model Expanded="Yes" ID="{A3EF5E36-C34B-4979-BA56-CB05D96C303C}" Name="LAC_DM1" Type="{CDE44E21-9669-11D1-9914-006097355D9B}" URL="/repo/data-platform/dwh/model/lac_dm1.pdm"/>
 	</Local>
 	<BrowserModule Name="Repository"/>
 </Workspace>
