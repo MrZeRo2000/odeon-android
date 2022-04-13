@@ -4,6 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.romanpulov.odeon.databinding.MainActivityBinding;
 import com.romanpulov.odeon.ui.main.MainFragment;
@@ -13,24 +18,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         MainActivityBinding binding = MainActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //setContentView(R.layout.main_activity);
+        Toolbar toolbar = binding.toolbar;
+        setSupportActionBar(toolbar);
 
-        // Find the toolbar view inside the activity layout
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        // Sets the Toolbar to act as the ActionBar for this Activity window.
-        // Make sure the toolbar exists in the activity and is not null
-        setSupportActionBar(binding.toolbar);
+        NavHostFragment navHostFragment = (NavHostFragment) binding.navHostFragment.getFragment();
+        NavController navController = navHostFragment.getNavController();
 
-        /*
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow();
-        }
+        AppBarConfiguration appBarConfiguration =
+                new AppBarConfiguration.Builder(navController.getGraph())
+                        .setOpenableLayout(binding.drawerLayout)
+                        .build();
 
-         */
+        NavigationUI.setupWithNavController(
+                toolbar, navController, appBarConfiguration);
+
     }
 }
