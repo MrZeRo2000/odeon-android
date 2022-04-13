@@ -9,5 +9,19 @@
         android:id="@+id/artistsFragment"
         android:name="com.romanpulov.odeon.ArtistsFragment"
         android:label="artists_fragment"
-        tools:layout="@layout/artists_fragment" />
+        tools:layout="@layout/artists_fragment" >
+        <action
+            android:id="@+id/action_artistsFragment_to_downloadFragment"
+            app:destination="@id/downloadFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/downloadFragment"
+        android:name="com.romanpulov.odeon.DownloadFragment"
+        android:label="download_fragment"
+        tools:layout="@layout/download_fragment" >
+        <action
+            android:id="@+id/action_downloadFragment_to_artistsFragment"
+            app:destination="@id/artistsFragment" />
+    </fragment>
+
 </navigation>
