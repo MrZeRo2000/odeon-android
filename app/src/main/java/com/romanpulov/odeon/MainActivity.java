@@ -8,17 +8,16 @@ import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.romanpulov.odeon.databinding.MainActivityBinding;
-import com.romanpulov.odeon.ui.main.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private NavController mNavController;
+    private AppBarConfiguration mAppBarConfiguration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,22 +32,27 @@ public class MainActivity extends AppCompatActivity {
         NavHostFragment navHostFragment = (NavHostFragment) binding.navHostFragment.getFragment();
         mNavController = navHostFragment.getNavController();
 
-        AppBarConfiguration appBarConfiguration =
+        mAppBarConfiguration =
                 new AppBarConfiguration.Builder(mNavController.getGraph())
                         .setOpenableLayout(binding.drawerLayout)
                         .build();
 
         NavigationUI.setupWithNavController(
-                toolbar, mNavController, appBarConfiguration);
+                toolbar, mNavController, mAppBarConfiguration);
 
         binding.navView.setNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.download) {
+            if (item.getItemId() == R.id.downloadFragment) {
                 mNavController.navigate(R.id.downloadFragment);
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
             }
             return true;
         });
+    }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(mNavController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
     @Override
