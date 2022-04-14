@@ -8,14 +8,16 @@
     <fragment
         android:id="@+id/artistsFragment"
         android:name="com.romanpulov.odeon.ArtistsFragment"
-        android:label="artists_fragment"
+        android:label="@string/title_artists"
         tools:layout="@layout/artists_fragment" >
+        <action
+            android:id="@+id/action_artistsFragment_to_loadFragment"
+            app:destination="@id/loadFragment" />
     </fragment>
     <fragment
-        android:id="@+id/downloadFragment"
-        android:name="com.romanpulov.odeon.DownloadFragment"
-        android:label="download_fragment"
-        tools:layout="@layout/download_fragment" >
-    </fragment>
+        android:id="@+id/loadFragment"
+        android:name="com.romanpulov.odeon.LoadFragment"
+        android:label="@string/title_load"
+        tools:layout="@layout/load_fragment" />
 
 </navigation>

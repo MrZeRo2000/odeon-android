@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Odeon</string>
 
-    <string name="action_download">Download</string>
+    <string name="action_load">Load</string>
+    
+    <string name="title_artists">Artists</string>
+    <string name="title_load">Load</string>
+
+    <string name="title_load_download">Download</string>
 </resources>
