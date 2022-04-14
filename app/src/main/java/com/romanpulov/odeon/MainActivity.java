@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
                     LoadViewModel loadViewModel = (new ViewModelProvider(this)).get(LoadViewModel.class);
                     loadViewModel.setUri(uri);
                     mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
+
+                    LoadManager.startDownloadFromUri(getApplicationContext(), uri);
+
                     //LoadManager.startDownloadFromUri(getApplicationContext(), uri);
                 }
                 // Handle the returned Uri

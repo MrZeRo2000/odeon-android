@@ -45,11 +45,6 @@ public class LoadFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mLoadViewModel = new ViewModelProvider(requireActivity()).get(LoadViewModel.class);
 
-        LoadManager.startDownloadFromUri(requireContext(), mLoadViewModel.getUri())
-        .getState().observe(getViewLifecycleOwner(), state -> {
-            log("Observing state:" + state);
-        });
-
         WorkManager
                 .getInstance(requireContext())
                 .getWorkInfosByTagLiveData(LoadManager.WORK_TAG_DOWNLOAD)
@@ -63,12 +58,12 @@ public class LoadFragment extends Fragment {
                             if (totalValue > 0) {
                                 log("Updating progress with Max = " + totalValue + ", Progress = " + currentValue);
                                 mBinding.downloadProgressBar.setMax((int) totalValue);
-                                mBinding.downloadProgressBar.setProgress((int) currentValue, true);
+                                mBinding.downloadProgressBar.setProgress((int) currentValue);
                             }
                         } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                             int max = mBinding.downloadProgressBar.getMax();
                             log("Updating progress with Max = " + max);
-                            mBinding.downloadProgressBar.setProgress(max, true);
+                            mBinding.downloadProgressBar.setProgress(max);
                         }
                     }
                 });
