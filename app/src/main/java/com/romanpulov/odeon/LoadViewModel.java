@@ -54,6 +54,7 @@ public class LoadViewModel extends ViewModel {
     public static class LoadProgress {
         private final Map<StepType, LoadStep> mLoadSteps = new HashMap<>();
 
+        @NonNull
         public Map<StepType, LoadStep> getLoadSteps() {
             return mLoadSteps;
         }
@@ -73,6 +74,13 @@ public class LoadViewModel extends ViewModel {
 
         public boolean isRunning() {
             return mLoadSteps.values().stream().anyMatch(p -> p.status == LoadStatus.RUNNING);
+        }
+
+        public boolean isPasswordRequired() {
+            LoadStep downloadLoadStep = mLoadSteps.get(StepType.DOWNLOAD);
+            LoadStep passwordLoadStep = mLoadSteps.get(StepType.PASSWORD_REQUEST);
+            return downloadLoadStep != null && downloadLoadStep.status == LoadStatus.COMPLETED &&
+                    (passwordLoadStep == null || passwordLoadStep.status != LoadStatus.COMPLETED);
         }
     }
 

@@ -7,4 +7,6 @@
     <string name="title_load">Load</string>
 
     <string name="title_load_download">Download</string>
+
+    <string name="caption_password">Password</string>
 </resources>

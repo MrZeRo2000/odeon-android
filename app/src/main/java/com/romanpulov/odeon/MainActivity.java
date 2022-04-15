@@ -43,7 +43,11 @@ public class MainActivity extends AppCompatActivity {
                     loadViewModel.setUri(uri);
                     mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
 
-                    LoadManager.cancelAll(getApplicationContext());
+                    LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
+                    loadProgress.getLoadSteps().put(
+                            LoadViewModel.StepType.DOWNLOAD,
+                            new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, new Bundle())
+                    );
                     LoadManager.startDownloadFromUri(getApplicationContext(), uri);
                 }
             });

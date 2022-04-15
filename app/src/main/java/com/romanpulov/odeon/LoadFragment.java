@@ -7,13 +7,17 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 
 import com.romanpulov.odeon.databinding.LoadFragmentBinding;
 import com.romanpulov.odeon.worker.DownloadWorker;
@@ -52,10 +56,24 @@ public class LoadFragment extends Fragment {
             }
 
             mBinding.cancelButton.setVisibility(loadProgress.isRunning() ? View.VISIBLE : View.GONE);
+            mBinding.cancelProcessButton.setVisibility(loadProgress.isRunning() ? View.GONE : View.VISIBLE);
+            mBinding.passwordTextField.setVisibility(loadProgress.isPasswordRequired()? View.VISIBLE : View.GONE);
         });
 
         mBinding.cancelButton.setOnClickListener(v -> {
             LoadManager.cancelAll(requireContext());
+        });
+
+        mBinding.cancelProcessButton.setOnClickListener(v -> {
+            mLoadViewModel.getLoadProgress().setValue(new LoadViewModel.LoadProgress());
+            NavHostFragment.findNavController(this).navigate(R.id.artistsFragment);
+        });
+
+        mBinding.passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                LoadManager.startProcessWithPassword(requireContext(), v.toString());
+            }
+            return true;
         });
     }
 }
