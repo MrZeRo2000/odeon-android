@@ -50,6 +50,12 @@ public class LoadFragment extends Fragment {
                 mBinding.downloadProgressBar.setMax((int)downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_MAX_VALUE, 0));
                 mBinding.downloadProgressBar.setProgress((int)downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_VALUE, 0));
             }
+
+            mBinding.cancelButton.setVisibility(loadProgress.isRunning() ? View.VISIBLE : View.GONE);
+        });
+
+        mBinding.cancelButton.setOnClickListener(v -> {
+            LoadManager.cancelAll(requireContext());
         });
     }
 }

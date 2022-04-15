@@ -120,11 +120,13 @@ public class MainActivity extends AppCompatActivity {
         LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
         if (loadProgress != null) {
             Map<LoadViewModel.StepType, LoadViewModel.LoadStep> loadSteps = loadProgress.getLoadSteps();
-            loadSteps.clear();
 
             Bundle params = new Bundle();
 
             if (workInfo.getState() == WorkInfo.State.RUNNING) {
+                log("Running");
+                loadSteps.clear();
+
                 params.putLong(
                         LoadViewModel.PARAM_NAME_VALUE,
                         workInfo.getProgress().getLong(DownloadWorker.PARAM_NAME_PROGRESS_CURRENT, 0)
@@ -137,17 +139,24 @@ public class MainActivity extends AppCompatActivity {
                         new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, params)
                 );
             } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                params.putLong(
-                        LoadViewModel.PARAM_NAME_VALUE,
-                        100
-                );
-                params.putLong(
-                        LoadViewModel.PARAM_NAME_MAX_VALUE,
-                        100
-                );
-                loadSteps.put(LoadViewModel.StepType.DOWNLOAD,
-                        new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.COMPLETED, params)
-                );
+                log("Succeeded");
+                LoadViewModel.LoadStep downloadLoadStep = loadSteps.get(LoadViewModel.StepType.DOWNLOAD);
+                if (downloadLoadStep != null) {
+                    params.putLong(
+                            LoadViewModel.PARAM_NAME_VALUE,
+                            100
+                    );
+                    params.putLong(
+                            LoadViewModel.PARAM_NAME_MAX_VALUE,
+                            100
+                    );
+                    loadSteps.put(LoadViewModel.StepType.DOWNLOAD,
+                            new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.COMPLETED, params)
+                    );
+                }
+            } else if (workInfo.getState() == WorkInfo.State.CANCELLED) {
+                log("Cancelled");
+                loadProgress = new LoadViewModel.LoadProgress();
             }
 
             loadViewModel.getLoadProgress().postValue(loadProgress);

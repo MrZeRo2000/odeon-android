@@ -70,6 +70,10 @@ public class LoadViewModel extends ViewModel {
         public boolean isEmpty() {
             return mLoadSteps.isEmpty();
         }
+
+        public boolean isRunning() {
+            return mLoadSteps.values().stream().anyMatch(p -> p.status == LoadStatus.RUNNING);
+        }
     }
 
     private Uri mUri;
