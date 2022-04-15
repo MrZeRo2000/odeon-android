@@ -16,9 +16,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import com.romanpulov.odeon.databinding.MainActivityBinding;
+import com.romanpulov.odeon.worker.DownloadWorker;
 import com.romanpulov.odeon.worker.LoadManager;
+
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private static final int PICK_FILE = 2;
@@ -37,25 +43,9 @@ public class MainActivity extends AppCompatActivity {
                     loadViewModel.setUri(uri);
                     mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
 
+                    LoadManager.cancelAll(getApplicationContext());
                     LoadManager.startDownloadFromUri(getApplicationContext(), uri);
-
-                    //LoadManager.startDownloadFromUri(getApplicationContext(), uri);
                 }
-                // Handle the returned Uri
-                /*
-                try (
-                        InputStream inputStream = getContentResolver().openInputStream(uri);
-                        OutputStream outputStream = openFileOutput(ARCHIVE_FILE_NAME, MODE_PRIVATE);
-                )
-                {
-                    FileUtils.copyStream(inputStream, outputStream);
-                    displayMessage("File loaded");
-                } catch (IOException e) {
-                    displayMessage("File not loaded:" + e.getMessage());
-                    e.printStackTrace();
-                }
-
-                 */
             });
 
     @Override
@@ -83,18 +73,22 @@ public class MainActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.loadFragment) {
                 binding.drawerLayout.closeDrawer(GravityCompat.START);
 
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
+                LoadViewModel loadViewModel = new ViewModelProvider(this).get(LoadViewModel.class);
+                LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
+                if (loadProgress != null && loadProgress.isEmpty()) {
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
 
-                mGetContent.launch("*/*");
-                /*
-                mNavController.navigate(R.id.action_artistsFragment_to_downloadFragment);
-
-                 */
+                    mGetContent.launch("*/*");
+                } else {
+                    mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
+                }
             }
             return true;
         });
+
+        setupWorkManagerObserver();
     }
 
     @Override
@@ -107,5 +101,62 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         return NavigationUI.onNavDestinationSelected(item, mNavController)
                 || super.onOptionsItemSelected(item);
+    }
+
+    private void setupWorkManagerObserver() {
+
+        WorkManager
+                .getInstance(this)
+                .getWorkInfosByTagLiveData(LoadManager.WORK_TAG_DOWNLOAD)
+                .observe(this, workInfos -> {
+                    if (workInfos.size() > 0) {
+                        handleDownloadWork(workInfos.get(0));
+                    }
+                });
+    }
+
+    private void handleDownloadWork(WorkInfo workInfo) {
+        LoadViewModel loadViewModel = new ViewModelProvider(this).get(LoadViewModel.class);
+        LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
+        if (loadProgress != null) {
+            Map<LoadViewModel.StepType, LoadViewModel.LoadStep> loadSteps = loadProgress.getLoadSteps();
+            loadSteps.clear();
+
+            Bundle params = new Bundle();
+
+            if (workInfo.getState() == WorkInfo.State.RUNNING) {
+                params.putLong(
+                        LoadViewModel.PARAM_NAME_VALUE,
+                        workInfo.getProgress().getLong(DownloadWorker.PARAM_NAME_PROGRESS_CURRENT, 0)
+                );
+                params.putLong(
+                        LoadViewModel.PARAM_NAME_MAX_VALUE,
+                        workInfo.getProgress().getLong(DownloadWorker.PARAM_NAME_PROGRESS_TOTAL, 0)
+                );
+                loadSteps.put(LoadViewModel.StepType.DOWNLOAD,
+                        new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, params)
+                );
+            } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                params.putLong(
+                        LoadViewModel.PARAM_NAME_VALUE,
+                        100
+                );
+                params.putLong(
+                        LoadViewModel.PARAM_NAME_MAX_VALUE,
+                        100
+                );
+                loadSteps.put(LoadViewModel.StepType.DOWNLOAD,
+                        new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.COMPLETED, params)
+                );
+            }
+
+            loadViewModel.getLoadProgress().postValue(loadProgress);
+        }
+    }
+
+    @Override
+    public void finish() {
+        // LoadManager.cancelAll(getApplicationContext());
+        super.finish();
     }
 }

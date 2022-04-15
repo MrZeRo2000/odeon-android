@@ -34,4 +34,8 @@ public class LoadManager {
         return WorkManager.getInstance(context)
                 .enqueueUniqueWork(WORK_NAME_DOWNLOAD, ExistingWorkPolicy.REPLACE, request);
     }
+
+    public static void cancelAll(Context context) {
+        WorkManager.getInstance(context).cancelAllWork();
+    }
 }

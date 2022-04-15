@@ -37,7 +37,6 @@ public class LoadFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         mBinding = LoadFragmentBinding.inflate(getLayoutInflater(), container, false);
         return mBinding.getRoot();
-        //return inflater.inflate(R.layout.load_fragment, container, false);
     }
 
     @Override
@@ -45,27 +44,12 @@ public class LoadFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mLoadViewModel = new ViewModelProvider(requireActivity()).get(LoadViewModel.class);
 
-        WorkManager
-                .getInstance(requireContext())
-                .getWorkInfosByTagLiveData(LoadManager.WORK_TAG_DOWNLOAD)
-                .observe(getViewLifecycleOwner(), workInfos -> {
-                    log("WorkInfos:" + workInfos);
-                    if (workInfos.size() > 0) {
-                        WorkInfo workInfo = workInfos.get(0);
-                        if (workInfo.getState() == WorkInfo.State.RUNNING) {
-                            long currentValue = workInfo.getProgress().getLong(DownloadWorker.PARAM_NAME_PROGRESS_CURRENT, 0);
-                            long totalValue = workInfo.getProgress().getLong(DownloadWorker.PARAM_NAME_PROGRESS_TOTAL, 0);
-                            if (totalValue > 0) {
-                                log("Updating progress with Max = " + totalValue + ", Progress = " + currentValue);
-                                mBinding.downloadProgressBar.setMax((int) totalValue);
-                                mBinding.downloadProgressBar.setProgress((int) currentValue);
-                            }
-                        } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                            int max = mBinding.downloadProgressBar.getMax();
-                            log("Updating progress with Max = " + max);
-                            mBinding.downloadProgressBar.setProgress(max);
-                        }
-                    }
-                });
+        mLoadViewModel.getLoadProgress().observe(getViewLifecycleOwner(), loadProgress ->  {
+            LoadViewModel.LoadStep downloadLoadStep = loadProgress.getLoadSteps().get(LoadViewModel.StepType.DOWNLOAD);
+            if (downloadLoadStep != null) {
+                mBinding.downloadProgressBar.setMax((int)downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_MAX_VALUE, 0));
+                mBinding.downloadProgressBar.setProgress((int)downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_VALUE, 0));
+            }
+        });
     }
 }

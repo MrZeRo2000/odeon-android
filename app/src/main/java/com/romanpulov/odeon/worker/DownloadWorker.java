@@ -83,7 +83,11 @@ public class DownloadWorker extends Worker {
                 long currentSize = 0;
 
                 while ((len = inputStream.read(buf)) > 0) {
-                    Thread.sleep(10);
+                    if (isStopped()) {
+                        log("Stopping");
+                        break;
+                    }
+                    //Thread.sleep(10);
                     currentSize += len;
                     setProgressAsync(new Data.Builder()
                             .putLong(PARAM_NAME_PROGRESS_TOTAL, contentSize)
