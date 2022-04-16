@@ -2,6 +2,7 @@ package com.romanpulov.odeon;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import com.romanpulov.odeon.databinding.LoadFragmentBinding;
 import com.romanpulov.odeon.worker.DownloadWorker;
@@ -71,7 +73,16 @@ public class LoadFragment extends Fragment {
 
         mBinding.passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                LoadManager.startProcessWithPassword(requireContext(), v.getText().toString());
+                LoadViewModel.LoadProgress loadProgress = mLoadViewModel.getLoadProgress().getValue();
+                if (loadProgress != null) {
+                    LoadViewModel.LoadStep passwordRequestLoadStep = new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.COMPLETED, null);
+                    loadProgress.getLoadSteps().put(LoadViewModel.StepType.PASSWORD_REQUEST, passwordRequestLoadStep);
+                    loadProgress.getLoadSteps().put(LoadViewModel.StepType.PROCESS, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, null));
+                    mLoadViewModel.getLoadProgress().postValue(loadProgress);
+                    LoadManager.startProcessWithPassword(requireContext(), v.getText().toString());
+                }
+                InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }
             return true;
         });

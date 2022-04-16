@@ -16,12 +16,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import com.romanpulov.odeon.databinding.MainActivityBinding;
+import com.romanpulov.odeon.helper.DisplayMessageHelper;
 import com.romanpulov.odeon.worker.DownloadWorker;
 import com.romanpulov.odeon.worker.LoadManager;
+import com.romanpulov.odeon.worker.ProcessWorker;
 
 import java.util.List;
 import java.util.Map;
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                 log("Succeeded");
                 LoadViewModel.LoadStep downloadLoadStep = loadSteps.get(LoadViewModel.StepType.DOWNLOAD);
-                if (downloadLoadStep != null) {
+                //if (downloadLoadStep != null) {
                     params.putLong(
                             LoadViewModel.PARAM_NAME_VALUE,
                             100
@@ -166,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
                     loadSteps.put(LoadViewModel.StepType.DOWNLOAD,
                             new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.COMPLETED, params)
                     );
-                }
+                //}
+                loadProgress.getLoadSteps().put(LoadViewModel.StepType.PASSWORD_REQUEST, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
             } else if (workInfo.getState() == WorkInfo.State.CANCELLED) {
                 log("Cancelled");
                 loadProgress = new LoadViewModel.LoadProgress();
@@ -179,18 +183,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleProcessWork(WorkInfo workInfo) {
-        log("Process work info:" + workInfo);
+        LoadViewModel loadViewModel = new ViewModelProvider(this).get(LoadViewModel.class);
+        LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
+        if (loadProgress != null) {
+            Map<LoadViewModel.StepType, LoadViewModel.LoadStep> loadSteps = loadProgress.getLoadSteps();
+            log("Process work info:" + workInfo);
 
-        if (workInfo.getState() == WorkInfo.State.RUNNING) {
-            log("Process running");
+            if (workInfo.getState() == WorkInfo.State.RUNNING) {
+                log("Process running");
 
-        } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-            log("Process succeeded");
+            } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                log("Process succeeded");
 
-        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-            log("Process failed");
+            } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                if (loadSteps.containsKey(LoadViewModel.StepType.PROCESS)) {
+                    loadSteps.remove(LoadViewModel.StepType.PROCESS);
+                    loadSteps.put(LoadViewModel.StepType.PASSWORD_REQUEST, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
+                    String errorMessage = workInfo.getOutputData().getString(ProcessWorker.PARAM_NAME_MESSAGE);
+                    if (errorMessage != null && !errorMessage.isEmpty()) {
+                        DisplayMessageHelper.displayErrorMessage(this, errorMessage);
+                    }
+                }
+            }
+
+            loadViewModel.getLoadProgress().postValue(loadProgress);
         }
-
     }
 
     @Override

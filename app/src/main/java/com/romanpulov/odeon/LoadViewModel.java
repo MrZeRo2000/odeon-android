@@ -18,6 +18,7 @@ public class LoadViewModel extends ViewModel {
     public enum LoadStatus {
         COMPLETED,
         RUNNING,
+        WAITING,
         CANCELLED,
         ERROR
     };
@@ -77,10 +78,15 @@ public class LoadViewModel extends ViewModel {
         }
 
         public boolean isPasswordRequired() {
+            LoadStep passwordLoadStep = mLoadSteps.get(StepType.PASSWORD_REQUEST);
+            return passwordLoadStep !=null && passwordLoadStep.status == LoadStatus.WAITING;
+            /*
             LoadStep downloadLoadStep = mLoadSteps.get(StepType.DOWNLOAD);
             LoadStep passwordLoadStep = mLoadSteps.get(StepType.PASSWORD_REQUEST);
             return downloadLoadStep != null && downloadLoadStep.status == LoadStatus.COMPLETED &&
                     (passwordLoadStep == null || passwordLoadStep.status != LoadStatus.COMPLETED);
+
+             */
         }
     }
 
