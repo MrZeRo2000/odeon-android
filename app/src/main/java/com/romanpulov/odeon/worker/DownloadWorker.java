@@ -80,7 +80,9 @@ public class DownloadWorker extends Worker {
             {
                 byte[] buf = new byte[FILE_BUF_LEN];
                 int len;
-                long currentSize = 0;
+                long position = 0;
+                long sectionSize = contentSize / 10;
+                long sectionPosition = 0;
 
                 while ((len = inputStream.read(buf)) > 0) {
                     if (isStopped()) {
@@ -88,12 +90,17 @@ public class DownloadWorker extends Worker {
                         break;
                     }
                     //Thread.sleep(10);
-                    currentSize += len;
-                    setProgressAsync(new Data.Builder()
-                            .putLong(PARAM_NAME_PROGRESS_TOTAL, contentSize)
-                            .putLong(PARAM_NAME_PROGRESS_CURRENT, currentSize)
-                            .build()
-                    );
+                    position += len;
+
+                    if (position > sectionPosition) {
+                        sectionPosition += sectionSize;
+                        setProgressAsync(new Data.Builder()
+                                .putLong(PARAM_NAME_PROGRESS_TOTAL, contentSize)
+                                .putLong(PARAM_NAME_PROGRESS_CURRENT, position)
+                                .build()
+                        );
+                    }
+
                     outputStream.write(buf, 0, len);
                 }
             }
