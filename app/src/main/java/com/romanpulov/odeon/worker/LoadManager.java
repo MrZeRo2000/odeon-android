@@ -46,6 +46,7 @@ public class LoadManager {
 
         OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(ProcessWorker.class)
                 .addTag(WORK_TAG_PROCESS)
+                .setInputData(inputData)
                 .build();
 
         return WorkManager.getInstance(context)

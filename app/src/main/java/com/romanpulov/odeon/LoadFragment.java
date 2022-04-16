@@ -71,7 +71,7 @@ public class LoadFragment extends Fragment {
 
         mBinding.passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                LoadManager.startProcessWithPassword(requireContext(), v.toString());
+                LoadManager.startProcessWithPassword(requireContext(), v.getText().toString());
             }
             return true;
         });

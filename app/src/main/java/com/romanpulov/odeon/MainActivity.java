@@ -117,6 +117,15 @@ public class MainActivity extends AppCompatActivity {
                         handleDownloadWork(workInfos.get(0));
                     }
                 });
+
+        WorkManager
+                .getInstance(this)
+                .getWorkInfosByTagLiveData(LoadManager.WORK_TAG_PROCESS)
+                .observe(this, workInfos -> {
+                    if (workInfos.size() > 0) {
+                        handleProcessWork(workInfos.get(0));
+                    }
+                });
     }
 
     private void handleDownloadWork(WorkInfo workInfo) {
@@ -161,10 +170,27 @@ public class MainActivity extends AppCompatActivity {
             } else if (workInfo.getState() == WorkInfo.State.CANCELLED) {
                 log("Cancelled");
                 loadProgress = new LoadViewModel.LoadProgress();
+            } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                log("Failed");
             }
 
             loadViewModel.getLoadProgress().postValue(loadProgress);
         }
+    }
+
+    private void handleProcessWork(WorkInfo workInfo) {
+        log("Process work info:" + workInfo);
+
+        if (workInfo.getState() == WorkInfo.State.RUNNING) {
+            log("Process running");
+
+        } else if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+            log("Process succeeded");
+
+        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+            log("Process failed");
+        }
+
     }
 
     @Override
