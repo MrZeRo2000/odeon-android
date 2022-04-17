@@ -88,6 +88,15 @@ public class LoadViewModel extends ViewModel {
 
              */
         }
+
+        public boolean isProcessRunning() {
+            LoadStep processLoadStep = mLoadSteps.get(StepType.PROCESS);
+            return processLoadStep != null && processLoadStep.status == LoadStatus.RUNNING;
+        }
+
+        public boolean processExists() {
+            return mLoadSteps.containsKey(StepType.PROCESS);
+        }
     }
 
     private Uri mUri;
@@ -109,5 +118,14 @@ public class LoadViewModel extends ViewModel {
         }
 
         return mLoadProgress;
+    }
+
+    private MutableLiveData<String> mMessage;
+
+    public MutableLiveData<String> getMessage() {
+        if (mMessage == null) {
+            mMessage = new MutableLiveData<>();
+        }
+        return mMessage;
     }
 }

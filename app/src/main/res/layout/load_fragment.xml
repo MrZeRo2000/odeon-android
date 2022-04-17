@@ -9,7 +9,7 @@
     tools:context=".LoadFragment">
 
     <TextView
-        android:id="@+id/download_text_view"
+        android:id="@+id/downloadTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/title_load_download"
@@ -22,15 +22,15 @@
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/download_progress_bar"
-        app:layout_constraintTop_toBottomOf="@+id/download_text_view"
+        android:id="@+id/downloadProgressBar"
+        app:layout_constraintTop_toBottomOf="@+id/downloadTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/passwordTextField"
-        app:layout_constraintTop_toBottomOf="@+id/download_progress_bar"
+        app:layout_constraintTop_toBottomOf="@+id/downloadProgressBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="0dp"
@@ -51,9 +51,22 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/progressTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        app:layout_constraintTop_toBottomOf="@+id/passwordTextField"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAppearance="?attr/textAppearanceSubtitle2"
+        android:text="@string/empty"
+        android:visibility="gone"
+        />
+
     <Button
         android:id="@+id/cancelButton"
-        app:layout_constraintTop_toBottomOf="@+id/passwordTextField"
+        app:layout_constraintTop_toBottomOf="@+id/progressTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="0dp"
@@ -65,7 +78,7 @@
 
     <Button
         android:id="@+id/cancelProcessButton"
-        app:layout_constraintTop_toBottomOf="@+id/passwordTextField"
+        app:layout_constraintTop_toBottomOf="@+id/progressTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="0dp"

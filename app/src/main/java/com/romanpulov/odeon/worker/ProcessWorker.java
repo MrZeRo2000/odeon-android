@@ -37,20 +37,35 @@ public class ProcessWorker extends Worker {
             return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_loader_archive_file_not_exists)));
         }
 
+        setProgressAsync(createDataWithMessage(R.string.notification_extract));
         List<File> files = null;
         try {
+            Thread.sleep(10);
             files = Junrar.extract(archiveFile, getApplicationContext().getFilesDir(), getInputData().getString(PARAM_NAME_PASSWORD));
             log("Extracted files:" + files.stream().map(File::getName).collect(Collectors.toList()));
-        } catch (IOException | RarException e) {
+        } catch (IOException | RarException |InterruptedException e) {
             log("extract failure");
             return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_loader_extract)));
         }
 
+        setProgressAsync(createDataWithMessage(R.string.notification_db_prepare));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        setProgressAsync(createDataWithMessage(R.string.notification_successfully_completed));
         return Result.success();
     }
 
     private Data createDataWithMessage(String message) {
         return new Data.Builder().putString(PARAM_NAME_MESSAGE, message).build();
     }
+
+    private Data createDataWithMessage(int resId) {
+        return new Data.Builder().putString(PARAM_NAME_MESSAGE, getApplicationContext().getString(resId)).build();
+    }
+
 
 }

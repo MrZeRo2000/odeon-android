@@ -51,15 +51,29 @@ public class LoadFragment extends Fragment {
         mLoadViewModel = new ViewModelProvider(requireActivity()).get(LoadViewModel.class);
 
         mLoadViewModel.getLoadProgress().observe(getViewLifecycleOwner(), loadProgress ->  {
-            LoadViewModel.LoadStep downloadLoadStep = loadProgress.getLoadSteps().get(LoadViewModel.StepType.DOWNLOAD);
-            if (downloadLoadStep != null) {
-                mBinding.downloadProgressBar.setMax((int)downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_MAX_VALUE, 0));
-                mBinding.downloadProgressBar.setProgress((int)downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_VALUE, 0));
-            }
+            if (loadProgress.isEmpty()) {
+                //NavHostFragment.findNavController(this).navigate(R.id.artistsFragment);
+                NavHostFragment.findNavController(this).navigateUp();
+            } else {
+                LoadViewModel.LoadStep downloadLoadStep = loadProgress.getLoadSteps().get(LoadViewModel.StepType.DOWNLOAD);
+                if (downloadLoadStep != null) {
+                    mBinding.downloadProgressBar.setMax((int) downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_MAX_VALUE, 0));
+                    mBinding.downloadProgressBar.setProgress((int) downloadLoadStep.params.getLong(LoadViewModel.PARAM_NAME_VALUE, 0));
+                }
 
-            mBinding.cancelButton.setVisibility(loadProgress.isRunning() ? View.VISIBLE : View.GONE);
-            mBinding.cancelProcessButton.setVisibility(loadProgress.isRunning() ? View.GONE : View.VISIBLE);
-            mBinding.passwordTextField.setVisibility(loadProgress.isPasswordRequired()? View.VISIBLE : View.GONE);
+                mBinding.cancelButton.setVisibility(loadProgress.isRunning() ? View.VISIBLE : View.GONE);
+                mBinding.cancelProcessButton.setVisibility(loadProgress.isRunning() ? View.GONE : View.VISIBLE);
+                mBinding.passwordTextField.setVisibility(loadProgress.isPasswordRequired() ? View.VISIBLE : View.GONE);
+                mBinding.progressTextView.setVisibility(loadProgress.isProcessRunning() ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        mLoadViewModel.getMessage().observe(getViewLifecycleOwner(), message -> {
+            log("Observing message:" + message);
+            if (mBinding.progressTextView.getVisibility() == View.VISIBLE) {
+                log("Displaying message");
+                mBinding.progressTextView.setText(message);
+            }
         });
 
         mBinding.cancelButton.setOnClickListener(v -> {
@@ -68,7 +82,8 @@ public class LoadFragment extends Fragment {
 
         mBinding.cancelProcessButton.setOnClickListener(v -> {
             mLoadViewModel.getLoadProgress().setValue(new LoadViewModel.LoadProgress());
-            NavHostFragment.findNavController(this).navigate(R.id.artistsFragment);
+            //NavHostFragment.findNavController(this).navigate(R.id.artistsFragment);
+            NavHostFragment.findNavController(this).navigateUp();
         });
 
         mBinding.passwordEditText.setOnEditorActionListener((v, actionId, event) -> {

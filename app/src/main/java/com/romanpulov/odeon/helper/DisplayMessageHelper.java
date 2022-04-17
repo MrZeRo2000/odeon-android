@@ -24,7 +24,7 @@ public class DisplayMessageHelper {
 
     static {
         MESSAGE_COLORS.put(MessageType.MT_INFO, R.color.white);
-        MESSAGE_COLORS.put(MessageType.MT_ERROR, R.color.red);
+        MESSAGE_COLORS.put(MessageType.MT_ERROR, R.color.error);
     }
 
     private static void displayMessage(
@@ -38,7 +38,7 @@ public class DisplayMessageHelper {
         if (snackBarView != null) {
             Integer colorResource = MESSAGE_COLORS.get(messageType);
             if (colorResource != null) {
-                int textColor = snackBarView.getContext().getResources().getColor(colorResource);
+                int textColor = snackBarView.getContext().getColor(colorResource);
                 Snackbar.make(snackBarView, text, BaseTransientBottomBar.LENGTH_SHORT)
                         .setTextColor(textColor)
                         .show();
