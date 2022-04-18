@@ -15,12 +15,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.Assert.*;
 
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class DBCreatePrePopulateText {
+public class DBCreatePrePopulateTest {
 
     private static class TestDBManager extends DBManager {
         public TestDBManager(Context mContext) {

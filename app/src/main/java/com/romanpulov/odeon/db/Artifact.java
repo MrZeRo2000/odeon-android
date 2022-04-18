@@ -66,14 +66,14 @@ public class Artifact {
 
     @Nullable
     @ColumnInfo(name = "artf_ins_date")
-    private Integer insert_date;
+    private Long insert_date;
 
     @Nullable
-    public Integer getInsert_date() {
+    public Long getInsert_date() {
         return insert_date;
     }
 
-    public Artifact(@NonNull Integer id, @NonNull Integer artifactTypeId, @NonNull Integer artistId, @NonNull String name, @Nullable Integer year, @Nullable Integer duration, @Nullable Integer insert_date) {
+    public Artifact(@NonNull Integer id, @NonNull Integer artifactTypeId, @NonNull Integer artistId, @NonNull String name, @Nullable Integer year, @Nullable Integer duration, @Nullable Long insert_date) {
         this.id = id;
         this.artifactTypeId = artifactTypeId;
         this.artistId = artistId;

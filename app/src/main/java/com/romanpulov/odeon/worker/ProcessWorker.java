@@ -55,7 +55,6 @@ public class ProcessWorker extends Worker {
         dbManager.prepare();
 
         setProgressAsync(createDataWithMessage(R.string.notification_successfully_completed));
-        // dbManager.close();
         return Result.success();
     }
 

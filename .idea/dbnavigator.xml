@@ -27,15 +27,15 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="2d2cc063-5f1c-4a22-8731-445f6cb1ea22">
-      <console name="Connection" type="STANDARD" schema="main" session="Main" />
+    <connection id="08e37761-309a-4b25-9010-92997f31f524">
+      <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
-    <connection id="2d2cc063-5f1c-4a22-8731-445f6cb1ea22" />
+    <connection id="08e37761-309a-4b25-9010-92997f31f524" />
   </component>
   <component name="DBNavigator.Project.EditorStateManager">
     <last-used-providers />
@@ -66,13 +66,13 @@
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="2d2cc063-5f1c-4a22-8731-445f6cb1ea22" active="true" signed="false">
+      <connection id="08e37761-309a-4b25-9010-92997f31f524" active="true" signed="false">
         <database>
           <name value="Connection" />
-          <description value="odeon" />
+          <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="3.3" />
+          <database-version value="9999.0" />
           <driver-source value="BUILTIN" />
           <driver-library value="" />
           <driver value="" />
@@ -81,7 +81,7 @@
           <port value="" />
           <database value="" />
           <files>
-            <file path="D:\prj\AndroidStudioProjects\odeon-android\db\odeon-db.db" schema="main" />
+            <file path="sqlite.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />

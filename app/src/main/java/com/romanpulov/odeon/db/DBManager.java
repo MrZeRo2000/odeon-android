@@ -3,6 +3,10 @@ package com.romanpulov.odeon.db;
 import android.content.Context;
 
 public class DBManager {
+    public final static int ARTIFACT_TYPE_ID_MUSIC = 100;
+    public final static int ARTIFACT_TYPE_ID_MUSIC_MP3 = 101;
+    public final static int ARTIFACT_TYPE_ID_MUSIC_LA = 102;
+
     private final Context mContext;
     private final AppDatabase mDb;
 
@@ -13,9 +17,9 @@ public class DBManager {
 
     private void prePopulate(AppDatabase db) {
         db.artifactTypeDAO().insertAll(
-                new ArtifactType(100, "Music", null),
-                new ArtifactType(101, "MP3", 100),
-                new ArtifactType(102, "LA", 100)
+                new ArtifactType(ARTIFACT_TYPE_ID_MUSIC, "Music", null),
+                new ArtifactType(ARTIFACT_TYPE_ID_MUSIC_MP3, "MP3", ARTIFACT_TYPE_ID_MUSIC),
+                new ArtifactType(ARTIFACT_TYPE_ID_MUSIC_LA, "LA", ARTIFACT_TYPE_ID_MUSIC)
         );
     }
 

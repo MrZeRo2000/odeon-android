@@ -53,6 +53,9 @@ dependencies {
     // ms access
     implementation 'com.healthmarketscience.jackcess:jackcess:4.0.1'
 
+    // additional jars
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     // Room components
     implementation "androidx.room:room-runtime:2.4.2"
     annotationProcessor "androidx.room:room-compiler:2.4.2"
