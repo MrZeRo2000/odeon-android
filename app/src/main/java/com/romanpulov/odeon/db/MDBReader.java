@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +62,12 @@ public class MDBReader {
 
     public Map<Integer, List<Composition>> getCompositionMap() {
         return compositionMap;
+    }
+
+    private final List<Composition> compositions = new ArrayList<>();
+
+    public List<Composition> getCompositions() {
+        return compositions;
     }
 
     public MDBReader(@NonNull File mFile) {
@@ -189,7 +196,32 @@ public class MDBReader {
         }
     }
 
+    public void sortCompositionMaps() {
+        for (int key: compositionMap.keySet()) {
+            List<Composition> mappedCompositions = compositionMap.get(key);
+            if (mappedCompositions != null) {
+                mappedCompositions.sort(Comparator.comparing(Composition::getId));
+
+                int index = 1;
+                for (Composition composition: mappedCompositions) {
+                    Composition numberedComposition = new Composition(
+                            composition.getId(),
+                            composition.getArtifactId(),
+                            composition.getTitle(),
+                            composition.getDuration(),
+                            1,
+                            index
+                    );
+
+                    compositions.add(numberedComposition);
+                    index ++;
+                }
+            }
+        }
+    }
+
     public void readCompositionsFromMP3CDCont(@NonNull Database database) throws IOException {
         readCompositionMaps(database);
+        sortCompositionMaps();
     }
 }
