@@ -31,6 +31,7 @@ public class MDBReaderTest {
         Assert.assertTrue(file.exists());
         reader.readAll();
 
-        Assert.assertEquals(2513, reader.getArtifacts().size());
+        Assert.assertEquals(2513 + 1119, reader.getArtifacts().size());
+        Assert.assertTrue("Artist list is not empty", reader.getArtists().size() > 0);
     }
 }
