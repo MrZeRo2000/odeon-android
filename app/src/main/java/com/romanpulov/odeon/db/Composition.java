@@ -12,19 +12,19 @@ public class Composition {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "comp_id")
-    private Long id;
+    private Integer id;
 
     @NonNull
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
     @NonNull
     @ColumnInfo(name = "artf_id")
-    private Long artifactId;
+    private Integer artifactId;
 
     @NonNull
-    public Long getArtifactId() {
+    public Integer getArtifactId() {
         return artifactId;
     }
 
@@ -64,7 +64,7 @@ public class Composition {
         return number;
     }
 
-    public Composition(@NonNull Long id, @NonNull Long artifactId, @NonNull String title, @Nullable Integer duration, @Nullable Integer diskNumber, @Nullable Integer number) {
+    public Composition(@NonNull Integer id, @NonNull Integer artifactId, @NonNull String title, @Nullable Integer duration, @Nullable Integer diskNumber, @Nullable Integer number) {
         this.id = id;
         this.artifactId = artifactId;
         this.title = title;

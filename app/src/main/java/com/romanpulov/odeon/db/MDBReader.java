@@ -3,7 +3,8 @@ package com.romanpulov.odeon.db;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.healthmarketscience.jackcess.Column;
+import androidx.annotation.NonNull;
+
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Row;
@@ -13,8 +14,10 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,9 +27,12 @@ public class MDBReader {
     private static final String ARTISTLIST_ID_COLUMN_NAME = "ArtistListID";
     private static final String TITLE_COLUMN_NAME = "Title";
     private static final String YEAR_COLUMN_NAME = "Year";
+    private static final String DURATION_COLUMN_NAME = "Duration";
     private static final String INS_DATE_COLUMN_NAME = "InsDate";
 
     private static final String LACONT_ID_COLUMN_NAME = "LAContID";
+
+    private static final String MP3CDCOMP_ID_COLUMN_NAME = "MP3CDCompID";
 
     private static void log(String message) {
         Log.d(MDBReader.class.getSimpleName(), message);
@@ -34,22 +40,30 @@ public class MDBReader {
 
     private final File mFile;
 
-    private List<Artifact> artifacts = new ArrayList<>();
-    private int lastMP3CDContId = 0;
-    private int lastLAContId = 0;
-
-    private Set<Integer> uniqueArtists = new HashSet<>();
-    private List<Artist> artists = new ArrayList<>();
-
-    public List<Artist> getArtists() {
-        return artists;
-    }
+    private final List<Artifact> artifacts = new ArrayList<>();
 
     public List<Artifact> getArtifacts() {
         return artifacts;
     }
 
-    public MDBReader(File mFile) {
+    private int lastMP3CDContId = 0;
+    private int lastLAContId = 0;
+    private final Set<Integer> mp3CDContIds = new HashSet<>();
+
+    private final Set<Integer> uniqueArtistIds = new HashSet<>();
+    private final List<Artist> artists = new ArrayList<>();
+
+    public List<Artist> getArtists() {
+        return artists;
+    }
+
+    private final Map<Integer, List<Composition>> compositionMap = new HashMap<>();
+
+    public Map<Integer, List<Composition>> getCompositionMap() {
+        return compositionMap;
+    }
+
+    public MDBReader(@NonNull File mFile) {
         this.mFile = mFile;
     }
 
@@ -64,13 +78,16 @@ public class MDBReader {
         }
     }
 
-    public void readArtifacts(Database database) throws IOException {
+    public void readArtifacts(@NonNull Database database) throws IOException {
         readArtifactsFromMP3CDCont(database, 0);
         readArtifactsFromLACont(database, lastMP3CDContId);
+
         readArtists(database);
+
+        readCompositionsFromMP3CDCont(database);
     }
 
-    public void readArtifactsFromMP3CDCont(Database database, int startId) throws IOException {
+    public void readArtifactsFromMP3CDCont(@NonNull Database database, int startId) throws IOException {
         Table table = database.getTable("MP3CDCont");
 
         for(Row row : table) {
@@ -80,7 +97,8 @@ public class MDBReader {
                     lastMP3CDContId = id;
                 }
                 int artistListID = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
-                uniqueArtists.add(artistListID);
+                uniqueArtistIds.add(artistListID);
+                mp3CDContIds.add(id);
 
                 Artifact artifact = new Artifact(
                         id + startId,
@@ -99,7 +117,7 @@ public class MDBReader {
         lastMP3CDContId += startId;
     }
 
-    public void readArtifactsFromLACont(Database database, int startId) throws IOException {
+    public void readArtifactsFromLACont(@NonNull Database database, int startId) throws IOException {
         Table table = database.getTable("LACont");
 
         for(Row row : table) {
@@ -109,7 +127,7 @@ public class MDBReader {
                     lastLAContId = id;
                 }
                 int artistListID = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
-                uniqueArtists.add(artistListID);
+                uniqueArtistIds.add(artistListID);
 
                 Artifact artifact = new Artifact(
                         id + startId,
@@ -129,17 +147,49 @@ public class MDBReader {
         lastLAContId += startId;
     }
 
-    public void readArtists(Database database) throws IOException {
+    public void readArtists(@NonNull Database database) throws IOException {
         Table table = database.getTable("ArtistList");
         for (Row row : table) {
             int id = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
-            if (uniqueArtists.contains(id)) {
+            if (uniqueArtistIds.contains(id)) {
                 Artist artist = new Artist(id, row.getString(TITLE_COLUMN_NAME));
                 artists.add(artist);
             }
         }
-
-
     }
 
+    public void readCompositionMaps(@NonNull Database database) throws IOException {
+        Table table = database.getTable("MP3CDComp");
+        for (Row row : table) {
+            int contId = row.getInt(MP3CDCONT_ID_COLUMN_NAME);
+
+            if (mp3CDContIds.contains(contId)) {
+                List<Composition> compositions;
+
+                //calc comp
+                compositions = compositionMap.getOrDefault(contId, null);
+
+                if (compositions == null) {
+                    compositions = new ArrayList<>();
+                }
+
+                //create and add
+                Composition composition = new Composition(
+                        row.getInt(MP3CDCOMP_ID_COLUMN_NAME),
+                        contId,
+                        row.getString(TITLE_COLUMN_NAME),
+                        row.getInt(DURATION_COLUMN_NAME),
+                        null,
+                        null
+                );
+                compositions.add(composition);
+
+                compositionMap.put(contId, compositions);
+            }
+        }
+    }
+
+    public void readCompositionsFromMP3CDCont(@NonNull Database database) throws IOException {
+        readCompositionMaps(database);
+    }
 }
