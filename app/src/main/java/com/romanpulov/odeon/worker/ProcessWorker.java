@@ -11,6 +11,8 @@ import androidx.work.WorkerParameters;
 import com.github.junrar.Junrar;
 import com.github.junrar.exception.RarException;
 import com.romanpulov.odeon.R;
+import com.romanpulov.odeon.db.AppDatabase;
+import com.romanpulov.odeon.db.DBManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,13 +51,11 @@ public class ProcessWorker extends Worker {
         }
 
         setProgressAsync(createDataWithMessage(R.string.notification_db_prepare));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        DBManager dbManager = new DBManager(getApplicationContext());
+        dbManager.prepare();
 
         setProgressAsync(createDataWithMessage(R.string.notification_successfully_completed));
+        // dbManager.close();
         return Result.success();
     }
 
