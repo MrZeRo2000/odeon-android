@@ -4,9 +4,11 @@ import android.content.Context;
 
 public class DBManager {
     private final Context mContext;
+    private final AppDatabase mDb;
 
     public DBManager(Context mContext) {
-        this.mContext = mContext;
+        this.mContext = mContext.getApplicationContext();
+        mDb = obtainDatabase(mContext);
     }
 
     private void prePopulate(AppDatabase db) {
@@ -17,13 +19,20 @@ public class DBManager {
         );
     }
 
+    protected AppDatabase obtainDatabase(Context context) {
+        return AppDatabase.getDatabase(mContext);
+    }
+
+    public AppDatabase getDatabase() {
+        return mDb;
+    }
+
     public void prepare() {
-        AppDatabase db = AppDatabase.getDatabase(mContext);
-        db.clearAllTables();
-        prePopulate(db);
+        mDb.clearAllTables();
+        prePopulate(mDb);
     }
 
     public void close() {
-        AppDatabase.getDatabase(mContext).close();
+        mDb.close();
     }
 }
