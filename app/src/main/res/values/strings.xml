@@ -12,13 +12,22 @@
 
     <string name="error_loader_archive_file_not_exists">Archive file does not exist</string>
     <string name="error_loader_extract">Archive extract error</string>
+    <string name="error_mdb_read_failure">Error reading MDB</string>
 
     <string name="notification_file_downloaded">File downloaded</string>
     <string name="notification_extract">Extracting from archive</string>
     <string name="notification_db_prepare">Preparing database</string>
+
+    <string name="notification_extract_artifacts">Extracting artifacts</string>
+    <string name="notification_extract_artists">Extracting artists</string>
+    <string name="notification_extract_comp">Extracting compositions</string>
+
     <string name="notification_transform_artifacts">Transforming artifacts</string>
     <string name="notification_transform_artists">Transforming artists</string>
     <string name="notification_transform_comp">Transforming compositions</string>
+
+
+
     <string name="notification_successfully_completed">Successfully completed</string>
 
     <string name="empty"/>

@@ -13,6 +13,7 @@ import com.github.junrar.exception.RarException;
 import com.romanpulov.odeon.R;
 import com.romanpulov.odeon.db.AppDatabase;
 import com.romanpulov.odeon.db.DBManager;
+import com.romanpulov.odeon.db.MDBReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,12 +51,37 @@ public class ProcessWorker extends Worker {
             return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_loader_extract)));
         }
 
+        MDBReader reader;
+        try {
+            reader = readMDB(files.get(0));
+
+        } catch (IOException e) {
+            return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_mdb_read_failure)));
+        }
+
         setProgressAsync(createDataWithMessage(R.string.notification_db_prepare));
         DBManager dbManager = new DBManager(getApplicationContext());
         dbManager.prepare();
 
         setProgressAsync(createDataWithMessage(R.string.notification_successfully_completed));
         return Result.success();
+    }
+
+    private MDBReader readMDB(File file) throws IOException {
+        try (MDBReader reader = new MDBReader(file)) {
+            setProgressAsync(createDataWithMessage(R.string.notification_extract_artifacts));
+            reader.readArtifactsFromMP3CDCont(0);
+            reader.readArtifactsFromLACont(reader.getLastMP3CDContId());
+
+            setProgressAsync(createDataWithMessage(R.string.notification_extract_artists));
+            reader.readArtists();
+
+            setProgressAsync(createDataWithMessage(R.string.notification_extract_comp));
+            reader.readCompositionsFromMP3CDComp(0);
+            reader.readCompositionsFromLAComp(reader.getLastMP3CDContId());
+
+            return reader;
+        }
     }
 
     private Data createDataWithMessage(String message) {

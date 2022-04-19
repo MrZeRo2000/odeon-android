@@ -29,7 +29,7 @@ public class MDBReaderTest {
     static MDBReader reader;
 
     @BeforeClass
-    public static void getFile() {
+    public static void getFile() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         file = new File(context.getFilesDir(), "Archive/Cat2000/Cat2000.mdb");
         reader = new MDBReader(file);
