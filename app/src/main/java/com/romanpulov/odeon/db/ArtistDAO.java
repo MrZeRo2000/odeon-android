@@ -13,6 +13,9 @@ public interface ArtistDAO {
     @Insert
     List<Long> insertAll(Collection<Artist> artists);
 
+    @Query("SELECT * FROM artists")
+    List<Artist> getAll();
+
     @Query("SELECT * FROM artists ORDER BY arts_name")
     LiveData<List<Artist>> getAllSorted();
 }

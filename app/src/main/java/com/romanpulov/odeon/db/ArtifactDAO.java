@@ -13,6 +13,9 @@ public interface ArtifactDAO {
     @Insert
     List<Long> insertAll(Collection<Artifact> artifacts);
 
+    @Query("SELECT * FROM artifacts")
+    List<Artifact> getAll();
+
     @Query("SELECT * FROM artifacts WHERE arts_id = :artistId ORDER BY artf_year, arts_id")
     LiveData<List<Artifact>> getByArtist(int artistId);
 }
