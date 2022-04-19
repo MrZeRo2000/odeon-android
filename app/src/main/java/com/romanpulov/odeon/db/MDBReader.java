@@ -1,6 +1,5 @@
 package com.romanpulov.odeon.db;
 
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -30,8 +29,11 @@ public class MDBReader {
     private static final String YEAR_COLUMN_NAME = "Year";
     private static final String DURATION_COLUMN_NAME = "Duration";
     private static final String INS_DATE_COLUMN_NAME = "InsDate";
+    private static final String CDNUM_COLUMN_NAME = "CDNum";
+    private static final String SNUM_COLUMN_NAME = "SNum";
 
     private static final String LACONT_ID_COLUMN_NAME = "LAContID";
+    private static final String LACOMP_ID_COLUMN_NAME = "LACompID";
 
     private static final String MP3CDCOMP_ID_COLUMN_NAME = "MP3CDCompID";
 
@@ -48,8 +50,12 @@ public class MDBReader {
     }
 
     private int lastMP3CDContId = 0;
+    private int lastMP3CDCompId = 0;
     private int lastLAContId = 0;
+    private int lastLACompId = 0;
+
     private final Set<Integer> mp3CDContIds = new HashSet<>();
+    private final Set<Integer> laContIds = new HashSet<>();
 
     private final Set<Integer> uniqueArtistIds = new HashSet<>();
     private final List<Artist> artists = new ArrayList<>();
@@ -91,13 +97,14 @@ public class MDBReader {
 
         readArtists(database);
 
-        readCompositionsFromMP3CDCont(database);
+        readCompositionsFromMP3CDComp(database, 0);
+        readCompositionsFromLAComp(database, lastMP3CDContId);
     }
 
     public void readArtifactsFromMP3CDCont(@NonNull Database database, int startId) throws IOException {
         Table table = database.getTable("MP3CDCont");
 
-        for(Row row : table) {
+        for (Row row : table) {
             if (row.getInt(REC_ID_COLUMN_NAME) == 1173) {
                 int id = row.getInt(MP3CDCONT_ID_COLUMN_NAME);
                 if (id > lastMP3CDContId) {
@@ -135,6 +142,7 @@ public class MDBReader {
                 }
                 int artistListID = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
                 uniqueArtistIds.add(artistListID);
+                laContIds.add(id);
 
                 Artifact artifact = new Artifact(
                         id + startId,
@@ -165,7 +173,7 @@ public class MDBReader {
         }
     }
 
-    public void readCompositionMaps(@NonNull Database database) throws IOException {
+    public void readCompositionMaps(@NonNull Database database, int startId) throws IOException {
         Table table = database.getTable("MP3CDComp");
         for (Row row : table) {
             int contId = row.getInt(MP3CDCONT_ID_COLUMN_NAME);
@@ -180,9 +188,15 @@ public class MDBReader {
                     compositions = new ArrayList<>();
                 }
 
+                // calc last Id
+                int id = row.getInt(MP3CDCOMP_ID_COLUMN_NAME);
+                if (id > lastMP3CDCompId) {
+                    lastMP3CDCompId = id;
+                }
+
                 //create and add
                 Composition composition = new Composition(
-                        row.getInt(MP3CDCOMP_ID_COLUMN_NAME),
+                        id + startId,
                         contId,
                         row.getString(TITLE_COLUMN_NAME),
                         row.getInt(DURATION_COLUMN_NAME),
@@ -194,6 +208,7 @@ public class MDBReader {
                 compositionMap.put(contId, compositions);
             }
         }
+        lastMP3CDCompId += startId;
     }
 
     public void sortCompositionMaps() {
@@ -220,8 +235,34 @@ public class MDBReader {
         }
     }
 
-    public void readCompositionsFromMP3CDCont(@NonNull Database database) throws IOException {
-        readCompositionMaps(database);
+    public void readCompositionsFromMP3CDComp(@NonNull Database database, int startId) throws IOException {
+        readCompositionMaps(database, startId);
         sortCompositionMaps();
+    }
+
+    public void readCompositionsFromLAComp(@NonNull Database database, int startId) throws IOException {
+        Table table = database.getTable("LAComp");
+
+        for (Row row : table) {
+            int contId = row.getInt(LACONT_ID_COLUMN_NAME);
+
+            if (laContIds.contains(contId)) {
+                int id = row.getInt(LACOMP_ID_COLUMN_NAME);
+                if (id > lastLACompId) {
+                    lastLACompId = id;
+                }
+
+                Composition composition = new Composition(
+                        id + startId,
+                        contId,
+                        row.getString(TITLE_COLUMN_NAME),
+                        row.getInt(DURATION_COLUMN_NAME),
+                        row.getInt(CDNUM_COLUMN_NAME),
+                        row.getInt(SNUM_COLUMN_NAME)
+                );
+                compositions.add(composition);
+            }
+        }
+        lastLACompId += startId;
     }
 }
