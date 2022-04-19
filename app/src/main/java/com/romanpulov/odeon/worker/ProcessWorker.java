@@ -63,6 +63,13 @@ public class ProcessWorker extends Worker {
         DBManager dbManager = new DBManager(getApplicationContext());
         dbManager.prepare();
 
+        setProgressAsync(createDataWithMessage(R.string.notification_load_artists));
+        dbManager.getDatabase().artistDAO().insertAll(reader.getArtists());
+        setProgressAsync(createDataWithMessage(R.string.notification_load_artifacts));
+        dbManager.getDatabase().artifactDAO().insertAll(reader.getArtifacts());
+        setProgressAsync(createDataWithMessage(R.string.notification_load_comp));
+        dbManager.getDatabase().compositionDAO().insertAll(reader.getCompositions());
+
         setProgressAsync(createDataWithMessage(R.string.notification_successfully_completed));
         return Result.success();
     }

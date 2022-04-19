@@ -26,7 +26,9 @@
     <string name="notification_transform_artists">Transforming artists</string>
     <string name="notification_transform_comp">Transforming compositions</string>
 
-
+    <string name="notification_load_artifacts">Loading artifacts</string>
+    <string name="notification_load_artists">Loading artists</string>
+    <string name="notification_load_comp">Loading compositions</string>
 
     <string name="notification_successfully_completed">Successfully completed</string>
 

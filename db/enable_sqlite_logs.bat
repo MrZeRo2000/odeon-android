@@ -1,0 +1,1 @@
+%LOCALAPPDATA%\Android\sdk\platform-tools\adb.exe shell setprop log.tag.SQLiteStatements VERBOSE
