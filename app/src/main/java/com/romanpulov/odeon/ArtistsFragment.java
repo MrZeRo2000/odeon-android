@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.romanpulov.odeon.databinding.ArtistsFragmentBinding;
+import com.romanpulov.odeon.db.Artist;
 
 public class ArtistsFragment extends Fragment {
 
@@ -39,9 +42,27 @@ public class ArtistsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final ArtistsRecyclerViewAdapter adapter = new ArtistsRecyclerViewAdapter(new DiffUtil.ItemCallback<Artist>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
+                return oldItem.getId().equals(newItem.getId());
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
+                return oldItem.getName().equals(newItem.getName());
+            }
+        });
+
+        mBinding.artistsRecyclerView.setAdapter(adapter);
+        mBinding.artistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         mViewModel = new ViewModelProvider(this).get(ArtistsViewModel.class);
+
         mViewModel.getArtists().observe(getViewLifecycleOwner(), artists -> {
-            log("Got some artists");
+            log("Got some artists:" + artists.size());
+            adapter.submitList(artists);
         });
     }
 
