@@ -10,6 +10,9 @@
 
     <string name="caption_password">Password</string>
 
+    <string name="caption_search">Search</string>
+    <string name="hint_search_artists">Search artists</string>
+
     <string name="error_loader_archive_file_not_exists">Archive file does not exist</string>
     <string name="error_loader_extract">Archive extract error</string>
     <string name="error_mdb_read_failure">Error reading MDB</string>
