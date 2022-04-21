@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -152,6 +153,9 @@ public class ArtistsFragment extends Fragment {
 
         mBinding.artistsRecyclerView.setAdapter(mAdapter);
         mBinding.artistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+        mBinding.artistsRecyclerView.addItemDecoration(dividerItemDecoration);
 
         mViewModel = new ViewModelProvider(this).get(ArtistsViewModel.class);
 

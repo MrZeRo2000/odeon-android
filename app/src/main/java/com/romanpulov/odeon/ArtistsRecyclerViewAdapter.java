@@ -25,10 +25,6 @@ public class ArtistsRecyclerViewAdapter extends ListAdapter<Artist, ArtistsRecyc
     private int mHighlightedPosition = -1;
     private int mPrevHighlightedPosition = -1;
 
-    public int getHighlightedPosition() {
-        return mHighlightedPosition;
-    }
-
     public void setHighlightedPosition(int highlightedPosition) {
         this.mPrevHighlightedPosition = this.mHighlightedPosition;
         this.mHighlightedPosition = highlightedPosition;

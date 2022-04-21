@@ -15,6 +15,7 @@
         <item name="android:windowBackground">@color/blue_gray_light</item>
         <!-- For SearchView edit text -->
         <item name="android:editTextColor">@color/white</item>
+
     </style>
 
 </resources>
