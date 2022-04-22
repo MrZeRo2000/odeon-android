@@ -1,5 +1,7 @@
 package com.romanpulov.odeon;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -24,6 +26,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import com.romanpulov.odeon.databinding.ArtistsFragmentBinding;
 import com.romanpulov.odeon.db.Artist;
@@ -69,6 +74,7 @@ public class ArtistsFragment extends Fragment {
         SearchView searchView = (SearchView) menu.findItem(R.id.searchAction).getActionView();
 
         searchView.setOnCloseListener(() -> {
+            log("OnCloseListener");
             mAdapter.setHighlightedPosition(-1);
             mAdapter.notifyHightlightedItemsChanged();
             return false;
@@ -161,15 +167,21 @@ public class ArtistsFragment extends Fragment {
             mAdapter.submitList(artists);
         });
 
-        mViewModel.getSelectedArtistId().postValue(null);
-
         mViewModel.getSelectedArtistId().observe(getViewLifecycleOwner(), artistId -> {
             if (artistId != null) {
-                log("Selected artistId:" + artistId);
                 mViewModel.getSelectedArtistId().postValue(null);
                 if (mViewModel.getArtifacts() != null) {
                     mViewModel.getArtifacts().postValue(null);
                 }
+
+                // hide keyboard
+                //--TODO-- add to common library
+                View focusedView = requireActivity().getCurrentFocus();
+                if (focusedView != null) {
+                    InputMethodManager imm = (InputMethodManager)requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+                }
+
                 mViewModel.setSelectedArtist(mAdapter.getCurrentList().get(artistId));
                 mViewModel.loadArtifacts();
                 NavHostFragment.findNavController(this).navigate(R.id.action_artistsFragment_to_artifactsFragment);
