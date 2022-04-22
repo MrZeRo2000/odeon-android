@@ -13,8 +13,12 @@ import com.romanpulov.odeon.db.Artist;
 import com.romanpulov.odeon.db.DBManager;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ArtistsViewModel extends AndroidViewModel {
 
@@ -58,14 +62,18 @@ public class ArtistsViewModel extends AndroidViewModel {
     }
 
     public void loadArtifacts() {
-        mExecutorService.submit(() -> {
+        Future<?> future = mExecutorService.submit(() -> {
             mArtifacts.postValue(mDbManager
                     .getDatabase()
                     .artifactDAO()
                     .getByArtist(getSelectedArtist().getId())
             );
-            log("Posted some values");
         });
+        try {
+            future.get(5, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArtistsViewModel(@NonNull Application application) {
