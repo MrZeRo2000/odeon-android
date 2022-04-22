@@ -8,6 +8,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ public class ArtifactsFragment extends Fragment {
     }
 
     ArtifactsFragmentBinding mBinding;
+    ArtifactsRecyclerViewAdapter mAdapter;
     private ArtistsViewModel mViewModel;
 
     public ArtifactsFragment() {
@@ -53,9 +56,18 @@ public class ArtifactsFragment extends Fragment {
             actionBar.setTitle(mViewModel.getSelectedArtist().getName());
         }
 
+        // listview
+        mAdapter = new ArtifactsRecyclerViewAdapter();
+        mBinding.artifactsRecyclerView.setAdapter(mAdapter);
+        mBinding.artifactsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+        mBinding.artifactsRecyclerView.addItemDecoration(dividerItemDecoration);
+
         mViewModel.getArtifacts().observe(getViewLifecycleOwner(), artifacts -> {
             if (artifacts != null) {
                 log("Got artifacts:" + artifacts.size());
+                mAdapter.submitList(artifacts);
             }
         });
 

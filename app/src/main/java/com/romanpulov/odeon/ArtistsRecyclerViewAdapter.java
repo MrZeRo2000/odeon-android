@@ -1,9 +1,7 @@
 package com.romanpulov.odeon;
 
-import android.app.Activity;
 import android.graphics.Typeface;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
