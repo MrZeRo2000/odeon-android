@@ -84,8 +84,8 @@ public class ProcessWorker extends Worker {
             reader.readArtists();
 
             setProgressAsync(createDataWithMessage(R.string.notification_extract_comp));
-            reader.readCompositionsFromMP3CDComp(0);
-            reader.readCompositionsFromLAComp(reader.getLastMP3CDContId());
+            reader.readCompositionsFromMP3CDComp(0, 0);
+            reader.readCompositionsFromLAComp(reader.getLastLAContId(), reader.getLastMP3CDContId());
 
             return reader;
         }

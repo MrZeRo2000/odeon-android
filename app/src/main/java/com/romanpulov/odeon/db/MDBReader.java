@@ -107,16 +107,6 @@ public class MDBReader implements Closeable {
         this.database.close();
     }
 
-    public void readAll() throws IOException {
-        readArtifactsFromMP3CDCont(0);
-        readArtifactsFromLACont(lastMP3CDContId);
-
-        readArtists();
-
-        readCompositionsFromMP3CDComp(0);
-        readCompositionsFromLAComp(lastMP3CDContId);
-    }
-
     public void readArtifactsFromMP3CDCont(int startId) throws IOException {
         Table table = database.getTable("MP3CDCont");
 
@@ -140,11 +130,21 @@ public class MDBReader implements Closeable {
                         Optional.ofNullable(row.getLocalDateTime(INS_DATE_COLUMN_NAME))
                                 .map(d -> d.toEpochSecond(ZoneOffset.ofHours(0)))
                                 .orElse(null)
-                        );
+                );
                 artifacts.add(artifact);
             }
         }
         lastMP3CDContId += startId;
+    }
+
+    public void readAll() throws IOException {
+        readArtifactsFromMP3CDCont(0);
+        readArtifactsFromLACont(lastMP3CDContId);
+
+        readArtists();
+
+        readCompositionsFromMP3CDComp(0, 0);
+        readCompositionsFromLAComp(lastMP3CDContId, lastMP3CDCompId);
     }
 
     public void readArtifactsFromLACont(int startId) throws IOException {
@@ -178,18 +178,7 @@ public class MDBReader implements Closeable {
         lastLAContId += startId;
     }
 
-    public void readArtists() throws IOException {
-        Table table = database.getTable("ArtistList");
-        for (Row row : table) {
-            int id = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
-            if (uniqueArtistIds.contains(id)) {
-                Artist artist = new Artist(id, row.getString(TITLE_COLUMN_NAME));
-                artists.add(artist);
-            }
-        }
-    }
-
-    public void readCompositionMaps(int startId) throws IOException {
+    public void readCompositionMaps(int startId, int startContId) throws IOException {
         Table table = database.getTable("MP3CDComp");
         for (Row row : table) {
             int contId = row.getInt(MP3CDCONT_ID_COLUMN_NAME);
@@ -213,7 +202,7 @@ public class MDBReader implements Closeable {
                 //create and add
                 Composition composition = new Composition(
                         id + startId,
-                        contId,
+                        contId + startContId,
                         row.getString(TITLE_COLUMN_NAME),
                         row.getInt(DURATION_COLUMN_NAME),
                         null,
@@ -225,6 +214,22 @@ public class MDBReader implements Closeable {
             }
         }
         lastMP3CDCompId += startId;
+    }
+
+    public void readArtists() throws IOException {
+        Table table = database.getTable("ArtistList");
+        for (Row row : table) {
+            int id = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
+            if (uniqueArtistIds.contains(id)) {
+                Artist artist = new Artist(id, row.getString(TITLE_COLUMN_NAME));
+                artists.add(artist);
+            }
+        }
+    }
+
+    public void readCompositionsFromMP3CDComp(int startId, int startContId) throws IOException {
+        readCompositionMaps(startId, startContId);
+        sortCompositionMaps();
     }
 
     public void sortCompositionMaps() {
@@ -251,12 +256,7 @@ public class MDBReader implements Closeable {
         }
     }
 
-    public void readCompositionsFromMP3CDComp(int startId) throws IOException {
-        readCompositionMaps(startId);
-        sortCompositionMaps();
-    }
-
-    public void readCompositionsFromLAComp(int startId) throws IOException {
+    public void readCompositionsFromLAComp(int startId, int startContId) throws IOException {
         Table table = database.getTable("LAComp");
 
         for (Row row : table) {
@@ -270,7 +270,7 @@ public class MDBReader implements Closeable {
 
                 Composition composition = new Composition(
                         id + startId,
-                        contId,
+                        contId + startContId,
                         row.getString(TITLE_COLUMN_NAME),
                         row.getInt(DURATION_COLUMN_NAME),
                         row.getInt(CDNUM_COLUMN_NAME),
