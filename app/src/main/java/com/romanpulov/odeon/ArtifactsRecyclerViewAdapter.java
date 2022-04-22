@@ -26,6 +26,8 @@ public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, Artifact
         IMAGE_RESOURCES.put(DBManager.ARTIFACT_TYPE_ID_MUSIC_LA, R.drawable.ic_artifact_la);
     }
 
+    private static final int DEFAULT_IMAGE_RESOURCE = android.R.drawable.ic_menu_search;
+
     private static void log(String message) {
         Log.d(ArtifactsRecyclerViewAdapter.class.getSimpleName(), message);
     }
@@ -88,11 +90,10 @@ public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, Artifact
         }
 
         // artifact type image
-        Integer resId = IMAGE_RESOURCES.getOrDefault(
-                artifact.getArtifactTypeId(),
-                android.R.drawable.ic_menu_search
-        );
-        if (resId != null) {
+        Integer resId = IMAGE_RESOURCES.get(artifact.getArtifactTypeId());
+        if (resId == null) {
+            holder.mBinding.artifactTypeImageView.setImageResource(DEFAULT_IMAGE_RESOURCE);
+        } else {
             holder.mBinding.artifactTypeImageView.setImageResource(resId);
         }
     }
