@@ -81,7 +81,7 @@ public class ArtistsViewModel extends AndroidViewModel {
             mArtifacts.postValue(mDbManager
                     .getDatabase()
                     .artifactDAO()
-                    .getByArtist(getSelectedArtist().getId())
+                    .getByArtistId(getSelectedArtist().getId())
             );
         });
         try {

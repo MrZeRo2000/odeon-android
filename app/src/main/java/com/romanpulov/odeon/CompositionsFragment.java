@@ -8,6 +8,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +24,8 @@ public class CompositionsFragment extends Fragment {
         Log.d(CompositionsFragment.class.getSimpleName(), message);
     }
 
-    CompositionsFragmentBinding mBinding;
+    private CompositionsFragmentBinding mBinding;
+    private CompositionsRecyclerViewAdapter mAdapter;
     private ArtistsViewModel mViewModel;
 
     public CompositionsFragment() {
@@ -53,9 +56,18 @@ public class CompositionsFragment extends Fragment {
             actionBar.setTitle(mViewModel.getSelectedArtifact().getName());
         }
 
+        // listview
+        mAdapter = new CompositionsRecyclerViewAdapter();
+        mBinding.compositionsRecyclerView.setAdapter(mAdapter);
+        mBinding.compositionsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
+        mBinding.compositionsRecyclerView.addItemDecoration(dividerItemDecoration);
+
         mViewModel.getCompositions().observe(getViewLifecycleOwner(), compositions -> {
             if (compositions != null) {
                 log("Got compositions:" + compositions.size());
+                mAdapter.submitList(compositions);
             }
         });
 

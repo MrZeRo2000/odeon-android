@@ -15,6 +15,6 @@ public interface CompositionDAO {
     @Query("SELECT * FROM compositions")
     List<Composition> getAll();
 
-    @Query("SELECT * FROM compositions WHERE artf_id = :artifactId ORDER BY comp_disk_num, comp_num, comp_id")
+    @Query("SELECT * FROM compositions WHERE artf_id = :artifactId ORDER BY comp_disk_num, comp_num, comp_title")
     List<Composition> getByArtifactId(int artifactId);
 }
