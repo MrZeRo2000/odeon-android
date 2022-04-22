@@ -19,6 +19,6 @@
         android:paddingEnd="@dimen/default_margin"
         android:maxLines="1"
         android:textAppearance="?attr/textAppearanceSubtitle1"
-    />
+        />
 
 </LinearLayout>

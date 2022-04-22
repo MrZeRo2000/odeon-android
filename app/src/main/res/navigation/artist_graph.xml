@@ -13,11 +13,19 @@
         <action
             android:id="@+id/action_artistsFragment_to_loadFragment"
             app:destination="@id/loadFragment" />
+        <action
+            android:id="@+id/action_artistsFragment_to_artifactsFragment"
+            app:destination="@id/artifactsFragment" />
     </fragment>
     <fragment
         android:id="@+id/loadFragment"
         android:name="com.romanpulov.odeon.LoadFragment"
         android:label="@string/title_load"
         tools:layout="@layout/load_fragment" />
+    <fragment
+        android:id="@+id/artifactsFragment"
+        android:name="com.romanpulov.odeon.ArtifactsFragment"
+        android:label="@string/empty"
+        tools:layout="@layout/artifacts_fragment" />
 
 </navigation>

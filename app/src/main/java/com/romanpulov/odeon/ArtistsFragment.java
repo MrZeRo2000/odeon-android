@@ -10,15 +10,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -74,11 +77,16 @@ public class ArtistsFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                int highlightedPosition = mAdapter.getHighlightedPosition();
                 searchView.setQuery("", false);
                 searchView.clearFocus();
                 searchView.setIconified(true);
-                mAdapter.setHighlightedPosition(-1);
-                mAdapter.notifyHightlightedItemsChanged();
+                if (highlightedPosition > -1) {
+                    log("On submit:" + highlightedPosition);
+                    mViewModel.getSelectedArtistId().postValue(highlightedPosition);
+                    mAdapter.setHighlightedPosition(-1);
+                    mAdapter.notifyHightlightedItemsChanged();
+                }
                 return false;
             }
 
@@ -139,17 +147,8 @@ public class ArtistsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mAdapter = new ArtistsRecyclerViewAdapter(new DiffUtil.ItemCallback<Artist>() {
-            @Override
-            public boolean areItemsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
-                return oldItem.getId().equals(newItem.getId());
-            }
-
-            @Override
-            public boolean areContentsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
-                return oldItem.getName().equals(newItem.getName());
-            }
-        });
+        mViewModel = new ViewModelProvider(requireActivity()).get(ArtistsViewModel.class);
+        mAdapter = new ArtistsRecyclerViewAdapter();
 
         mBinding.artistsRecyclerView.setAdapter(mAdapter);
         mBinding.artistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -157,11 +156,24 @@ public class ArtistsFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL);
         mBinding.artistsRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        mViewModel = new ViewModelProvider(this).get(ArtistsViewModel.class);
-
         mViewModel.getArtists().observe(getViewLifecycleOwner(), artists -> {
             log("Got some artists:" + artists.size());
             mAdapter.submitList(artists);
+        });
+
+        mViewModel.getSelectedArtistId().postValue(null);
+
+        mViewModel.getSelectedArtistId().observe(getViewLifecycleOwner(), artistId -> {
+            if (artistId != null) {
+                log("Selected artistId:" + artistId);
+                mViewModel.getSelectedArtistId().postValue(null);
+                if (mViewModel.getArtifacts() != null) {
+                    mViewModel.getArtifacts().postValue(null);
+                }
+                mViewModel.setSelectedArtist(mAdapter.getCurrentList().get(artistId));
+                mViewModel.loadArtifacts();
+                NavHostFragment.findNavController(this).navigate(R.id.action_artistsFragment_to_artifactsFragment);
+            }
         });
     }
 }

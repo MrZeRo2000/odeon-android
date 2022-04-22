@@ -1,5 +1,6 @@
 package com.romanpulov.odeon;
 
+import android.app.Activity;
 import android.graphics.Typeface;
 import android.util.Log;
 import android.util.TypedValue;
@@ -7,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,8 +25,24 @@ public class ArtistsRecyclerViewAdapter extends ListAdapter<Artist, ArtistsRecyc
         Log.d(ArtistsRecyclerViewAdapter.class.getSimpleName(), message);
     }
 
+    private static class ArtistDiffCallback extends DiffUtil.ItemCallback<Artist> {
+        @Override
+        public boolean areItemsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Artist oldItem, @NonNull Artist newItem) {
+            return oldItem.getName().equals(newItem.getName());
+        }
+    }
+
     private int mHighlightedPosition = -1;
     private int mPrevHighlightedPosition = -1;
+
+    public int getHighlightedPosition() {
+        return mHighlightedPosition;
+    }
 
     public void setHighlightedPosition(int highlightedPosition) {
         this.mPrevHighlightedPosition = this.mHighlightedPosition;
@@ -46,18 +65,29 @@ public class ArtistsRecyclerViewAdapter extends ListAdapter<Artist, ArtistsRecyc
 
         public ViewHolder(@NonNull ArtistsRecyclerViewItemBinding binding) {
             super(binding.getRoot());
+            binding.getRoot().setOnClickListener(v -> {
+                if (v.getContext() instanceof AppCompatActivity) {
+                    AppCompatActivity a = (AppCompatActivity)v.getContext();
+                    ArtistsViewModel viewModel = new ViewModelProvider(a).get(ArtistsViewModel.class);
+                    viewModel.getSelectedArtistId().postValue(getAdapterPosition());
+                }
+            });
             mBinding = binding;
         }
     }
 
-    public ArtistsRecyclerViewAdapter(@NonNull DiffUtil.ItemCallback<Artist> diffCallback) {
-        super(diffCallback);
+    public ArtistsRecyclerViewAdapter() {
+        super(new ArtistDiffCallback());
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ArtistsRecyclerViewItemBinding binding = ArtistsRecyclerViewItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ArtistsRecyclerViewItemBinding binding = ArtistsRecyclerViewItemBinding.inflate(
+                LayoutInflater.from(parent.getContext()),
+                parent,
+                false
+        );
         return new ViewHolder(binding);
     }
 

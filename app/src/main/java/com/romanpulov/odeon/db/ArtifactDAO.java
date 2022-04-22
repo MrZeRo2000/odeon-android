@@ -1,6 +1,7 @@
 package com.romanpulov.odeon.db;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -17,5 +18,5 @@ public interface ArtifactDAO {
     List<Artifact> getAll();
 
     @Query("SELECT * FROM artifacts WHERE arts_id = :artistId ORDER BY artf_year, arts_id")
-    LiveData<List<Artifact>> getByArtist(int artistId);
+    List<Artifact> getByArtist(int artistId);
 }

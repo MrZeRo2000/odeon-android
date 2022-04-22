@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
+        <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/drawable/download_outline.xml" value="0.1" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/drawable/line.xml" value="0.1" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/drawable/line_drawable.xml" value="0.1" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/drawable/tumb.xml" value="0.1" />
+        <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/layout/artifacts_fragment.xml" value="0.2859375" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/layout/artists_fragment.xml" value="0.28894927536231885" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/layout/artists_recycler_view_item.xml" value="0.271875" />
         <entry key="..\:/prj/AndroidStudioProjects/odeon-android/app/src/main/res/layout/download_fragment.xml" value="0.28894927536231885" />
