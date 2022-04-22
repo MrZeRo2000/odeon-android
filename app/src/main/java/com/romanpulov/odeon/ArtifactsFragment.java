@@ -72,14 +72,14 @@ public class ArtifactsFragment extends Fragment {
             }
         });
 
-        mViewModel.getSelectedArtifactId().observe(getViewLifecycleOwner(), artifactId -> {
-            if (artifactId != null) {
-                mViewModel.getSelectedArtifactId().postValue(null);
+        mViewModel.getSelectedArtifactIndex().observe(getViewLifecycleOwner(), artifactIndex -> {
+            if (artifactIndex != null) {
+                mViewModel.getSelectedArtifactIndex().postValue(null);
                 if (mViewModel.getCompositions() != null) {
                     mViewModel.getCompositions().postValue(null);
                 }
 
-                mViewModel.setSelectedArtifact(mAdapter.getCurrentList().get(artifactId));
+                mViewModel.setSelectedArtifact(mAdapter.getCurrentList().get(artifactIndex));
                 mViewModel.loadCompositions();
                 NavHostFragment.findNavController(this).navigate(R.id.action_artifactsFragment_to_compositionsFragment);
             }

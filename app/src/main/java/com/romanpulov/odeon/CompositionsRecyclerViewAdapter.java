@@ -1,7 +1,6 @@
 package com.romanpulov.odeon;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -23,8 +22,10 @@ public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, Co
         @Override
         public boolean areContentsTheSame(@NonNull Composition oldItem, @NonNull Composition newItem) {
             return oldItem.getTitle().equals(newItem.getTitle()) &&
-                    ((oldItem.getDiskNumber() == null ? 0 : (int)oldItem.getDiskNumber()) == (newItem.getDiskNumber() == null ? 0 : (int)newItem.getDiskNumber())) &&
-                    ((oldItem.getNumber() == null ? 0 : (int)oldItem.getNumber()) == (newItem.getNumber() == null ? 0 : (int)newItem.getNumber()))
+                    ((oldItem.getDiskNumber() == null ? 0 : (int)oldItem.getDiskNumber()) ==
+                            (newItem.getDiskNumber() == null ? 0 : (int)newItem.getDiskNumber())) &&
+                    ((oldItem.getNumber() == null ? 0 : (int)oldItem.getNumber()) ==
+                            (newItem.getNumber() == null ? 0 : (int)newItem.getNumber()))
                     ;
         }
     }
@@ -57,6 +58,7 @@ public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, Co
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Composition composition = getCurrentList().get(position);
 
+        // title
         holder.mBinding.titleTextView.setText(composition.getTitle());
     }
 }

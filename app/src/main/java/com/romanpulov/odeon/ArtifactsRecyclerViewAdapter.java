@@ -49,8 +49,6 @@ public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, Artifact
         }
     }
 
-
-
     protected static class ViewHolder extends RecyclerView.ViewHolder {
         ArtifactsRecyclerViewItemBinding mBinding;
 
@@ -60,7 +58,7 @@ public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, Artifact
                 if (v.getContext() instanceof AppCompatActivity) {
                     AppCompatActivity a = (AppCompatActivity)v.getContext();
                     ArtistsViewModel viewModel = new ViewModelProvider(a).get(ArtistsViewModel.class);
-                    viewModel.getSelectedArtifactId().postValue(getAdapterPosition());
+                    viewModel.getSelectedArtifactIndex().postValue(getAdapterPosition());
                 }
             });
 

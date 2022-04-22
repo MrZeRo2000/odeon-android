@@ -40,16 +40,16 @@ public class ArtistsViewModel extends AndroidViewModel {
         return mArtists;
     }
 
-    private final MutableLiveData<Integer> mSelectedArtistId = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mSelectedArtistIndex = new MutableLiveData<>();
 
-    public MutableLiveData<Integer> getSelectedArtistId() {
-        return mSelectedArtistId;
+    public MutableLiveData<Integer> getSelectedArtistIndex() {
+        return mSelectedArtistIndex;
     }
 
-    private final MutableLiveData<Integer> mSelectedArtifactId = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mSelectedArtifactIndex = new MutableLiveData<>();
 
-    public MutableLiveData<Integer> getSelectedArtifactId() {
-        return mSelectedArtifactId;
+    public MutableLiveData<Integer> getSelectedArtifactIndex() {
+        return mSelectedArtifactIndex;
     }
 
     private Artist mSelectedArtist;

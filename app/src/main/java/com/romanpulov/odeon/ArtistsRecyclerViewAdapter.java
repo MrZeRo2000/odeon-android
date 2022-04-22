@@ -67,7 +67,7 @@ public class ArtistsRecyclerViewAdapter extends ListAdapter<Artist, ArtistsRecyc
                 if (v.getContext() instanceof AppCompatActivity) {
                     AppCompatActivity a = (AppCompatActivity)v.getContext();
                     ArtistsViewModel viewModel = new ViewModelProvider(a).get(ArtistsViewModel.class);
-                    viewModel.getSelectedArtistId().postValue(getAdapterPosition());
+                    viewModel.getSelectedArtistIndex().postValue(getAdapterPosition());
                 }
             });
             mBinding = binding;

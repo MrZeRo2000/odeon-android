@@ -1,11 +1,8 @@
 package com.romanpulov.odeon;
 
-import static android.content.Context.INPUT_METHOD_SERVICE;
-
 import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -13,30 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.romanpulov.odeon.databinding.ArtistsFragmentBinding;
-import com.romanpulov.odeon.db.Artist;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ArtistsFragment extends Fragment {
@@ -74,7 +62,6 @@ public class ArtistsFragment extends Fragment {
         SearchView searchView = (SearchView) menu.findItem(R.id.searchAction).getActionView();
 
         searchView.setOnCloseListener(() -> {
-            log("OnCloseListener");
             mAdapter.setHighlightedPosition(-1);
             mAdapter.notifyHightlightedItemsChanged();
             return false;
@@ -89,7 +76,7 @@ public class ArtistsFragment extends Fragment {
                 searchView.setIconified(true);
                 if (highlightedPosition > -1) {
                     log("On submit:" + highlightedPosition);
-                    mViewModel.getSelectedArtistId().postValue(highlightedPosition);
+                    mViewModel.getSelectedArtistIndex().postValue(highlightedPosition);
                     mAdapter.setHighlightedPosition(-1);
                     mAdapter.notifyHightlightedItemsChanged();
                 }
@@ -167,9 +154,9 @@ public class ArtistsFragment extends Fragment {
             mAdapter.submitList(artists);
         });
 
-        mViewModel.getSelectedArtistId().observe(getViewLifecycleOwner(), artistId -> {
-            if (artistId != null) {
-                mViewModel.getSelectedArtistId().postValue(null);
+        mViewModel.getSelectedArtistIndex().observe(getViewLifecycleOwner(), artistIndex -> {
+            if (artistIndex != null) {
+                mViewModel.getSelectedArtistIndex().postValue(null);
                 if (mViewModel.getArtifacts() != null) {
                     mViewModel.getArtifacts().postValue(null);
                 }
@@ -182,7 +169,7 @@ public class ArtistsFragment extends Fragment {
                     imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
                 }
 
-                mViewModel.setSelectedArtist(mAdapter.getCurrentList().get(artistId));
+                mViewModel.setSelectedArtist(mAdapter.getCurrentList().get(artistIndex));
                 mViewModel.loadArtifacts();
                 NavHostFragment.findNavController(this).navigate(R.id.action_artistsFragment_to_artifactsFragment);
             }
