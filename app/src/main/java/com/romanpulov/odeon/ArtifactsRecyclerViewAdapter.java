@@ -12,10 +12,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.romanpulov.odeon.databinding.ArtifactsRecyclerViewItemBinding;
 import com.romanpulov.odeon.db.Artifact;
+import com.romanpulov.odeon.db.DBManager;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, ArtifactsRecyclerViewAdapter.ViewHolder> {
+
+    private static final Map<Integer, Integer> IMAGE_RESOURCES = new HashMap<>();
+
+    static {
+        IMAGE_RESOURCES.put(DBManager.ARTIFACT_TYPE_ID_MUSIC_MP3, R.drawable.ic_artifact_mp3);
+        IMAGE_RESOURCES.put(DBManager.ARTIFACT_TYPE_ID_MUSIC_LA, R.drawable.ic_artifact_la);
+    }
 
     private static void log(String message) {
         Log.d(ArtifactsRecyclerViewAdapter.class.getSimpleName(), message);
@@ -76,6 +85,15 @@ public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, Artifact
         } else {
             holder.mBinding.yearTextView.setVisibility(View.VISIBLE);
             holder.mBinding.yearTextView.setText(String.valueOf(artifact.getYear()));
+        }
+
+        // artifact type image
+        Integer resId = IMAGE_RESOURCES.getOrDefault(
+                artifact.getArtifactTypeId(),
+                android.R.drawable.ic_menu_search
+        );
+        if (resId != null) {
+            holder.mBinding.artifactTypeImageView.setImageResource(resId);
         }
     }
 }

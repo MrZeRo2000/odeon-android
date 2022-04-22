@@ -16,13 +16,13 @@
         android:layout_height="wrap_content"
         android:paddingStart="@dimen/default_margin"
         android:paddingTop="@dimen/default_margin_half"
-        android:paddingEnd="@dimen/default_margin"
+        android:paddingEnd="@dimen/default_margin_half"
         android:paddingBottom="@dimen/default_margin_half"
         android:textAlignment="textStart"
         android:textAppearance="?attr/textAppearanceSubtitle1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/yearTextView"
+        app:layout_constraintEnd_toStartOf="@id/artifactTypeImageView"
         app:layout_constraintTop_toTopOf="parent"
         />
 
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
-        android:paddingStart="@dimen/default_margin"
+        android:paddingStart="@dimen/default_margin_half"
         android:paddingTop="@dimen/default_margin_half"
         android:paddingEnd="@dimen/default_margin"
         android:paddingBottom="@dimen/default_margin_half"
@@ -39,5 +39,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/artifactTypeImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/default_margin_half"
+        android:paddingTop="@dimen/default_margin_half"
+        android:paddingEnd="@dimen/default_margin_half"
+        android:paddingBottom="@dimen/default_margin_half"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/yearTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/empty"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
