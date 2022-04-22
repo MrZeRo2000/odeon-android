@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.romanpulov.odeon.db.Artifact;
 import com.romanpulov.odeon.db.Artist;
+import com.romanpulov.odeon.db.Composition;
 import com.romanpulov.odeon.db.DBManager;
 
 import java.util.List;
@@ -45,14 +46,28 @@ public class ArtistsViewModel extends AndroidViewModel {
         return mSelectedArtistId;
     }
 
+    private final MutableLiveData<Integer> mSelectedArtifactId = new MutableLiveData<>();
+
+    public MutableLiveData<Integer> getSelectedArtifactId() {
+        return mSelectedArtifactId;
+    }
+
     private Artist mSelectedArtist;
 
     public Artist getSelectedArtist() {
-        return mSelectedArtist;
-    }
+        return mSelectedArtist;    }
 
     public void setSelectedArtist(Artist selectedArtist) {
         this.mSelectedArtist = selectedArtist;
+    }
+
+    private Artifact mSelectedArtifact;
+
+    public Artifact getSelectedArtifact() {
+        return mSelectedArtifact;    }
+
+    public void setSelectedArtifact(Artifact selectedArtifact) {
+        this.mSelectedArtifact = selectedArtifact;
     }
 
     MutableLiveData<List<Artifact>> mArtifacts = new MutableLiveData<>();
@@ -75,6 +90,28 @@ public class ArtistsViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
     }
+
+    MutableLiveData<List<Composition>> mCompositions = new MutableLiveData<>();
+
+    public MutableLiveData<List<Composition>> getCompositions() {
+        return mCompositions;
+    }
+
+    public void loadCompositions() {
+        Future<?> future = mExecutorService.submit(() -> {
+            mCompositions.postValue(mDbManager
+                    .getDatabase()
+                    .compositionDAO()
+                    .getByArtifactId(getSelectedArtifact().getId())
+            );
+        });
+        try {
+            future.get(5, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public ArtistsViewModel(@NonNull Application application) {
         super(application);

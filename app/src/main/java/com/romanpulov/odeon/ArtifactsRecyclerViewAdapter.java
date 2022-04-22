@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,6 +56,14 @@ public class ArtifactsRecyclerViewAdapter extends ListAdapter<Artifact, Artifact
 
         public ViewHolder(@NonNull ArtifactsRecyclerViewItemBinding binding) {
             super(binding.getRoot());
+            binding.getRoot().setOnClickListener(v -> {
+                if (v.getContext() instanceof AppCompatActivity) {
+                    AppCompatActivity a = (AppCompatActivity)v.getContext();
+                    ArtistsViewModel viewModel = new ViewModelProvider(a).get(ArtistsViewModel.class);
+                    viewModel.getSelectedArtifactId().postValue(getAdapterPosition());
+                }
+            });
+
             mBinding = binding;
         }
     }

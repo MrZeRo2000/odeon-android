@@ -26,6 +26,15 @@
         android:id="@+id/artifactsFragment"
         android:name="com.romanpulov.odeon.ArtifactsFragment"
         android:label="@string/empty"
-        tools:layout="@layout/artifacts_fragment" />
+        tools:layout="@layout/artifacts_fragment" >
+        <action
+            android:id="@+id/action_artifactsFragment_to_compositionsFragment"
+            app:destination="@id/compositionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/compositionsFragment"
+        android:name="com.romanpulov.odeon.CompositionsFragment"
+        android:label="compositions_fragment"
+        tools:layout="@layout/compositions_fragment" />
 
 </navigation>

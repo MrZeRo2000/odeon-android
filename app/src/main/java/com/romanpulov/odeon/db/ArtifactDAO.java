@@ -17,6 +17,6 @@ public interface ArtifactDAO {
     @Query("SELECT * FROM artifacts")
     List<Artifact> getAll();
 
-    @Query("SELECT * FROM artifacts WHERE arts_id = :artistId ORDER BY artf_year, arts_id")
+    @Query("SELECT * FROM artifacts WHERE arts_id = :artistId ORDER BY artf_year, arts_id, artf_name")
     List<Artifact> getByArtist(int artistId);
 }

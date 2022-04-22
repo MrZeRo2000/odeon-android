@@ -8,6 +8,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -24,8 +25,8 @@ public class ArtifactsFragment extends Fragment {
         Log.d(ArtifactsFragment.class.getSimpleName(), message);
     }
 
-    ArtifactsFragmentBinding mBinding;
-    ArtifactsRecyclerViewAdapter mAdapter;
+    private ArtifactsFragmentBinding mBinding;
+    private ArtifactsRecyclerViewAdapter mAdapter;
     private ArtistsViewModel mViewModel;
 
     public ArtifactsFragment() {
@@ -68,6 +69,19 @@ public class ArtifactsFragment extends Fragment {
             if (artifacts != null) {
                 log("Got artifacts:" + artifacts.size());
                 mAdapter.submitList(artifacts);
+            }
+        });
+
+        mViewModel.getSelectedArtifactId().observe(getViewLifecycleOwner(), artifactId -> {
+            if (artifactId != null) {
+                mViewModel.getSelectedArtifactId().postValue(null);
+                if (mViewModel.getCompositions() != null) {
+                    mViewModel.getCompositions().postValue(null);
+                }
+
+                mViewModel.setSelectedArtifact(mAdapter.getCurrentList().get(artifactId));
+                mViewModel.loadCompositions();
+                NavHostFragment.findNavController(this).navigate(R.id.action_artifactsFragment_to_compositionsFragment);
             }
         });
 
