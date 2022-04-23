@@ -9,17 +9,46 @@
     android:minHeight="?attr/minTouchTargetSize">
 
     <TextView
-        android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/diskNumberTextView"
+        android:layout_width="@dimen/disk_num_width"
         android:layout_height="wrap_content"
+        android:paddingStart="@dimen/default_margin_half"
+        android:paddingEnd="0dp"
         android:maxLines="1"
-        android:paddingStart="@dimen/default_margin"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/compositionNumberTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/compositionNumberTextView"
+        android:layout_width="@dimen/composition_num_width"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/default_margin_half"
+        android:paddingEnd="@dimen/default_margin_half"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/diskNumberTextView"
+        app:layout_constraintEnd_toStartOf="@+id/titleTextView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/default_margin_half"
         android:paddingTop="@dimen/default_margin_half"
         android:paddingEnd="@dimen/default_margin"
         android:paddingBottom="@dimen/default_margin_half"
         android:textAppearance="?attr/textAppearanceSubtitle1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/compositionNumberTextView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

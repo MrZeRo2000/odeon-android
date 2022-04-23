@@ -7,6 +7,78 @@
     android:layout_height="match_parent"
     tools:context=".CompositionsFragment">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+    >
+
+        <TextView
+            android:id="@+id/diskNumberHeaderTextView"
+            android:layout_width="@dimen/disk_num_width"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/default_margin_half"
+            android:paddingEnd="0dp"
+            android:maxLines="1"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/compositionNumberHeaderTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/table_header_disk_num"
+            />
+
+        <TextView
+            android:id="@+id/compositionNumberHeaderTextView"
+            android:layout_width="@dimen/composition_num_width"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/default_margin_half"
+            android:paddingEnd="@dimen/default_margin_half"
+            android:maxLines="1"
+            android:textAlignment="center"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
+            app:layout_constraintStart_toEndOf="@+id/diskNumberHeaderTextView"
+            app:layout_constraintEnd_toStartOf="@+id/titleHeaderTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/table_header_composition_num"
+            />
+
+        <TextView
+            android:id="@+id/titleHeaderTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/default_margin_half"
+            android:paddingTop="@dimen/default_margin_half"
+            android:paddingEnd="@dimen/default_margin"
+            android:paddingBottom="@dimen/default_margin_half"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
+            app:layout_constraintStart_toEndOf="@+id/compositionNumberHeaderTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="@string/table_header_title"
+            />
+        <View
+            android:id="@+id/bottomDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/titleHeaderTextView"
+            android:background="@android:color/darker_gray"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/compositionsRecyclerView"
         android:layout_width="0dp"
@@ -17,7 +89,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/headerLayout"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

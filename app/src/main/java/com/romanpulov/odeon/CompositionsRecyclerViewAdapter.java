@@ -1,6 +1,7 @@
 package com.romanpulov.odeon;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -11,7 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.romanpulov.odeon.databinding.CompositionsRecyclerViewItemBinding;
 import com.romanpulov.odeon.db.Composition;
 
+import java.util.List;
+
 public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, CompositionsRecyclerViewAdapter.ViewHolder> {
+    private long mCountDisks = 0;
 
     private static class CompositionDiffCallback extends DiffUtil.ItemCallback<Composition> {
         @Override
@@ -60,5 +64,22 @@ public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, Co
 
         // title
         holder.mBinding.titleTextView.setText(composition.getTitle());
+
+        // disk
+        if (mCountDisks > 1) {
+            holder.mBinding.diskNumberTextView.setVisibility(View.VISIBLE);
+            holder.mBinding.diskNumberTextView.setText(composition.getDiskNumber() == null ? "" : String.valueOf(composition.getDiskNumber()));
+        } else {
+            holder.mBinding.diskNumberTextView.setVisibility(View.GONE);
+        }
+
+        // composition
+        holder.mBinding.compositionNumberTextView.setText(composition.getNumber() == null ? "" : String.valueOf(composition.getNumber()));
+    }
+
+    @Override
+    public void onCurrentListChanged(@NonNull List<Composition> previousList, @NonNull List<Composition> currentList) {
+        super.onCurrentListChanged(previousList, currentList);
+        mCountDisks = currentList.stream().map(Composition::getDiskNumber).distinct().count();
     }
 }

@@ -36,7 +36,12 @@
 
     <string name="notification_successfully_completed">Successfully completed</string>
 
+    <string name="table_header_disk_num">D</string>
+    <string name="table_header_composition_num">N</string>
+    <string name="table_header_title">Title</string>
+
     <string name="empty" />
+    <string name="three_dots">…</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

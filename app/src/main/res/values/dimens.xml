@@ -2,4 +2,7 @@
 <resources>
     <dimen name="default_margin">16dp</dimen>
     <dimen name="default_margin_half">8dp</dimen>
+
+    <dimen name="disk_num_width">20dp</dimen>
+    <dimen name="composition_num_width">48dp</dimen>
 </resources>

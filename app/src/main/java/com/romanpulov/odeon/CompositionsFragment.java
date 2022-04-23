@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.romanpulov.odeon.databinding.CompositionsFragmentBinding;
+import com.romanpulov.odeon.db.Composition;
 
 public class CompositionsFragment extends Fragment {
 
@@ -53,7 +54,10 @@ public class CompositionsFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity)requireActivity();
         ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mViewModel.getSelectedArtifact().getName());
+            actionBar.setTitle(mViewModel.getSelectedArtifact().getName() +
+                    (mViewModel.getSelectedArtifact().getYear() == null ? "" :
+                            " " + mViewModel.getSelectedArtifact().getYear())
+                    );
         }
 
         // listview
@@ -67,6 +71,9 @@ public class CompositionsFragment extends Fragment {
         mViewModel.getCompositions().observe(getViewLifecycleOwner(), compositions -> {
             if (compositions != null) {
                 log("Got compositions:" + compositions.size());
+                mBinding.diskNumberHeaderTextView.setVisibility(
+                        compositions.stream().map(Composition::getDiskNumber).distinct().count() > 1 ? View.VISIBLE : View.GONE
+                );
                 mAdapter.submitList(compositions);
             }
         });

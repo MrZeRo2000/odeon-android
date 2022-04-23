@@ -25,7 +25,7 @@
     <fragment
         android:id="@+id/artifactsFragment"
         android:name="com.romanpulov.odeon.ArtifactsFragment"
-        android:label="@string/empty"
+        android:label="@string/three_dots"
         tools:layout="@layout/artifacts_fragment" >
         <action
             android:id="@+id/action_artifactsFragment_to_compositionsFragment"
@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/compositionsFragment"
         android:name="com.romanpulov.odeon.CompositionsFragment"
-        android:label="compositions_fragment"
+        android:label="@string/three_dots"
         tools:layout="@layout/compositions_fragment" />
 
 </navigation>
