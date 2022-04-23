@@ -15,7 +15,12 @@ import com.romanpulov.odeon.db.Composition;
 import java.util.List;
 
 public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, CompositionsRecyclerViewAdapter.ViewHolder> {
-    private long mCountDisks = 0;
+
+    private boolean mDiskVisible = false;
+
+    public void setDiskVisible(boolean diskVisible) {
+        this.mDiskVisible = diskVisible;
+    }
 
     private static class CompositionDiffCallback extends DiffUtil.ItemCallback<Composition> {
         @Override
@@ -66,7 +71,7 @@ public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, Co
         holder.mBinding.titleTextView.setText(composition.getTitle());
 
         // disk
-        if (mCountDisks > 1) {
+        if (mDiskVisible) {
             holder.mBinding.diskNumberTextView.setVisibility(View.VISIBLE);
             holder.mBinding.diskNumberTextView.setText(composition.getDiskNumber() == null ? "" : String.valueOf(composition.getDiskNumber()));
         } else {
@@ -80,6 +85,5 @@ public class CompositionsRecyclerViewAdapter extends ListAdapter<Composition, Co
     @Override
     public void onCurrentListChanged(@NonNull List<Composition> previousList, @NonNull List<Composition> currentList) {
         super.onCurrentListChanged(previousList, currentList);
-        mCountDisks = currentList.stream().map(Composition::getDiskNumber).distinct().count();
     }
 }

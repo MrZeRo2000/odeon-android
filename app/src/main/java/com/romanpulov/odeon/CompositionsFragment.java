@@ -27,14 +27,9 @@ public class CompositionsFragment extends Fragment {
 
     private CompositionsFragmentBinding mBinding;
     private CompositionsRecyclerViewAdapter mAdapter;
-    private ArtistsViewModel mViewModel;
 
     public CompositionsFragment() {
         // Required empty public constructor
-    }
-
-    public static CompositionsFragment newInstance(String param1, String param2) {
-        return new CompositionsFragment();
     }
 
     @Override
@@ -48,7 +43,7 @@ public class CompositionsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mViewModel = new ViewModelProvider(requireActivity()).get(ArtistsViewModel.class);
+        ArtistsViewModel mViewModel = new ViewModelProvider(requireActivity()).get(ArtistsViewModel.class);
 
         // set actionbar title
         AppCompatActivity activity = (AppCompatActivity)requireActivity();
@@ -71,9 +66,11 @@ public class CompositionsFragment extends Fragment {
         mViewModel.getCompositions().observe(getViewLifecycleOwner(), compositions -> {
             if (compositions != null) {
                 log("Got compositions:" + compositions.size());
-                mBinding.diskNumberHeaderTextView.setVisibility(
-                        compositions.stream().map(Composition::getDiskNumber).distinct().count() > 1 ? View.VISIBLE : View.GONE
+                boolean diskVisible = compositions.stream().map(Composition::getDiskNumber).distinct().count() > 1;
+                mBinding.diskNumberHeaderTextView.setVisibility(diskVisible ? View.VISIBLE : View.GONE
                 );
+
+                mAdapter.setDiskVisible(diskVisible);
                 mAdapter.submitList(compositions);
             }
         });
