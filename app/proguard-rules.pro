@@ -26,3 +26,5 @@
     public static *** v(...);
     public static *** i(...);
 }
+
+-dontwarn org.slf4j.impl.StaticLoggerBinder
