@@ -27,4 +27,13 @@
     public static *** i(...);
 }
 
+-keep class org.apache.commons.logging.** { *; }
+-dontwarn javax.servlet.ServletContextEvent
+-dontwarn javax.servlet.ServletContextListener
+-dontwarn org.apache.avalon.framework.logger.Logger
+-dontwarn org.apache.log.Hierarchy
+-dontwarn org.apache.log.Logger
+-dontwarn org.apache.log4j.Level
+-dontwarn org.apache.log4j.Logger
+-dontwarn org.apache.log4j.Priority
 -dontwarn org.slf4j.impl.StaticLoggerBinder
