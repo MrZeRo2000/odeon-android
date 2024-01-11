@@ -2,15 +2,7 @@ package com.romanpulov.odeon.worker;
 
 import android.content.Context;
 import android.net.Uri;
-import android.service.controls.Control;
-
-import androidx.work.Constraints;
-import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.Operation;
-import androidx.work.WorkManager;
+import androidx.work.*;
 
 public class LoadManager {
     public static final String WORK_TAG_DOWNLOAD = "work_tag_download";

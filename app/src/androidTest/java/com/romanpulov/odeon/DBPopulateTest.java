@@ -1,19 +1,14 @@
 package com.romanpulov.odeon;
 
 import android.content.Context;
-
 import androidx.room.Room;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.romanpulov.odeon.db.AppDatabase;
 import com.romanpulov.odeon.db.ArtifactType;
 import com.romanpulov.odeon.db.DBManager;
 import com.romanpulov.odeon.db.MDBReader;
-
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -47,7 +42,7 @@ public class DBPopulateTest {
     }
 
     @Test
-    public void test100PrePopulate() throws Exception {
+    public void test100PrePopulate() {
         dbManager.prepare();
         AppDatabase db = dbManager.getDatabase();
 
@@ -60,18 +55,18 @@ public class DBPopulateTest {
         Context context = ApplicationProvider.getApplicationContext();
         File file = new File(context.getFilesDir(), "Archive/Cat2000/Cat2000.mdb");
         reader = new MDBReader(file);
-        reader.readAll();
+        reader.read(context, message -> {});
     }
 
     @Test
-    public void test300Load() throws Exception {
+    public void test300Load() {
         dbManager.getDatabase().artistDAO().insertAll(reader.getArtists());
         dbManager.getDatabase().artifactDAO().insertAll(reader.getArtifacts());
         dbManager.getDatabase().compositionDAO().insertAll(reader.getCompositions());
     }
 
     @Test
-    public void test400Counts() throws Exception {
+    public void test400Counts() {
         Assert.assertEquals(dbManager.getDatabase().artistDAO().getAll().size(), reader.getArtists().size());
         Assert.assertEquals(dbManager.getDatabase().artifactDAO().getAll().size(), reader.getArtifacts().size());
         Assert.assertEquals(dbManager.getDatabase().compositionDAO().getAll().size(), reader.getCompositions().size());

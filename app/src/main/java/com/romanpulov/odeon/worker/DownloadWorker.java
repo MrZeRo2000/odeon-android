@@ -5,16 +5,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 
 public class DownloadWorker extends Worker {
     public static final String PARAM_NAME_URI = "uri";
@@ -52,8 +51,9 @@ public class DownloadWorker extends Worker {
                 return 0;
             }
         } finally {
-            if ((cursor != null) && !cursor.isClosed())
-            cursor.close();
+            if ((cursor != null) && !cursor.isClosed()) {
+                cursor.close();
+            }
         }
     }
 
@@ -75,7 +75,7 @@ public class DownloadWorker extends Worker {
 
             try (
                     InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(uri);
-                    OutputStream outputStream = new FileOutputStream(new File(getApplicationContext().getFilesDir(), DATA_FILE_NAME));
+                    OutputStream outputStream = Files.newOutputStream(new File(getApplicationContext().getFilesDir(), DATA_FILE_NAME).toPath())
                     )
             {
                 byte[] buf = new byte[FILE_BUF_LEN];
@@ -113,9 +113,8 @@ public class DownloadWorker extends Worker {
 
             return Result.success();
         } catch (Exception e) {
-            e.printStackTrace();
+            log("Download error:" + e);
             return Result.failure();
         }
-
     }
 }

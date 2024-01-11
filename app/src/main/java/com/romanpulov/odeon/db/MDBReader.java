@@ -1,5 +1,6 @@
 package com.romanpulov.odeon.db;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
+import com.romanpulov.odeon.R;
 
 import java.io.Closeable;
 import java.io.File;
@@ -26,7 +28,7 @@ import java.util.Set;
 /**
  * Reads data from MDB to memory data structures
  */
-public class MDBReader implements Closeable {
+public class MDBReader implements Closeable, DBReader {
     private static final String REC_ID_COLUMN_NAME = "RecID";
     private static final String MP3CDCONT_ID_COLUMN_NAME = "MP3CDContID";
     private static final String ARTISTLIST_ID_COLUMN_NAME = "ArtistListID";
@@ -46,8 +48,6 @@ public class MDBReader implements Closeable {
         Log.d(MDBReader.class.getSimpleName(), message);
     }
 
-    private final File mFile;
-
     private final List<Artifact> artifacts = new ArrayList<>();
 
     public List<Artifact> getArtifacts() {
@@ -62,10 +62,6 @@ public class MDBReader implements Closeable {
 
     private int lastMP3CDCompId = 0;
 
-    public int getLastMP3CDCompId() {
-        return lastMP3CDCompId;
-    }
-
     private int lastLAContId = 0;
 
     public int getLastLAContId() {
@@ -73,10 +69,6 @@ public class MDBReader implements Closeable {
     }
 
     private int lastLACompId = 0;
-
-    public int getLastLACompId() {
-        return lastLACompId;
-    }
 
     private final Set<Integer> mp3CDContIds = new HashSet<>();
     private final Set<Integer> laContIds = new HashSet<>();
@@ -96,18 +88,34 @@ public class MDBReader implements Closeable {
         return compositions;
     }
 
-    private Database database;
+    private final Database database;
 
     public MDBReader (@NonNull File mFile) throws IOException {
-        this.mFile = mFile;
         this.database = DatabaseBuilder.open(mFile);
     }
+
     @Override
     public void close() throws IOException {
         this.database.close();
     }
 
-    public void readArtifactsFromMP3CDCont(int startId) throws IOException {
+    @Override
+    public DBData read(Context context, ProgressListener progressListener) throws IOException {
+        progressListener.onProgress(context.getString(R.string.notification_extract_artifacts));
+        readArtifactsFromMP3CDCont(0);
+        readArtifactsFromLACont(getLastMP3CDContId());
+
+        progressListener.onProgress(context.getString(R.string.notification_extract_artists));
+        readArtists();
+
+        progressListener.onProgress(context.getString(R.string.notification_extract_comp));
+        readCompositionsFromMP3CDComp(0, 0);
+        readCompositionsFromLAComp(getLastLAContId(), getLastMP3CDContId());
+
+        return DBData.from(getArtists(), getArtifacts(), getCompositions());
+    }
+
+    private void readArtifactsFromMP3CDCont(int startId) throws IOException {
         Table table = database.getTable("MP3CDCont");
 
         for (Row row : table) {
@@ -137,17 +145,7 @@ public class MDBReader implements Closeable {
         lastMP3CDContId += startId;
     }
 
-    public void readAll() throws IOException {
-        readArtifactsFromMP3CDCont(0);
-        readArtifactsFromLACont(lastMP3CDContId);
-
-        readArtists();
-
-        readCompositionsFromMP3CDComp(0, 0);
-        readCompositionsFromLAComp(lastMP3CDContId, lastMP3CDCompId);
-    }
-
-    public void readArtifactsFromLACont(int startId) throws IOException {
+    private void readArtifactsFromLACont(int startId) throws IOException {
         Table table = database.getTable("LACont");
 
         for(Row row : table) {
@@ -178,7 +176,7 @@ public class MDBReader implements Closeable {
         lastLAContId += startId;
     }
 
-    public void readCompositionMaps(int startId, int startContId) throws IOException {
+    private void readCompositionMaps(int startId, int startContId) throws IOException {
         Table table = database.getTable("MP3CDComp");
         for (Row row : table) {
             int contId = row.getInt(MP3CDCONT_ID_COLUMN_NAME);
@@ -216,7 +214,7 @@ public class MDBReader implements Closeable {
         lastMP3CDCompId += startId;
     }
 
-    public void readArtists() throws IOException {
+    private void readArtists() throws IOException {
         Table table = database.getTable("ArtistList");
         for (Row row : table) {
             int id = row.getInt(ARTISTLIST_ID_COLUMN_NAME);
@@ -227,12 +225,12 @@ public class MDBReader implements Closeable {
         }
     }
 
-    public void readCompositionsFromMP3CDComp(int startId, int startContId) throws IOException {
+    private void readCompositionsFromMP3CDComp(int startId, int startContId) throws IOException {
         readCompositionMaps(startId, startContId);
         sortCompositionMaps();
     }
 
-    public void sortCompositionMaps() {
+    private void sortCompositionMaps() {
         for (int key: compositionMap.keySet()) {
             List<Composition> mappedCompositions = compositionMap.get(key);
             if (mappedCompositions != null) {
@@ -256,7 +254,7 @@ public class MDBReader implements Closeable {
         }
     }
 
-    public void readCompositionsFromLAComp(int startId, int startContId) throws IOException {
+    private void readCompositionsFromLAComp(int startId, int startContId) throws IOException {
         Table table = database.getTable("LAComp");
 
         for (Row row : table) {
