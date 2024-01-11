@@ -1,14 +1,14 @@
 package com.romanpulov.odeon;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.provider.OpenableColumns;
+import android.util.Log;
+import android.view.MenuItem;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -16,21 +16,17 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.work.Data;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-
 import com.romanpulov.odeon.databinding.MainActivityBinding;
 import com.romanpulov.odeon.helper.DisplayMessageHelper;
 import com.romanpulov.odeon.worker.DownloadWorker;
 import com.romanpulov.odeon.worker.LoadManager;
 import com.romanpulov.odeon.worker.ProcessWorker;
 
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int PICK_FILE = 2;
 
     private static void log(String message) {
         Log.d(MainActivity.class.getSimpleName(), message);
@@ -42,16 +38,32 @@ public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
+                    String fileName;
+                    try (Cursor returnCursor =
+                                getContentResolver().query(
+                                        uri,
+                                        null,
+                                        null,
+                                        null,
+                                        null)) {
+                        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        returnCursor.moveToFirst();
+                        fileName = returnCursor.getString(nameIndex);
+                        log("File name is" + fileName);
+                    }
+
                     LoadViewModel loadViewModel = (new ViewModelProvider(this)).get(LoadViewModel.class);
-                    loadViewModel.setUri(uri);
+                    loadViewModel.setFileName(fileName);
                     mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
 
                     LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
-                    loadProgress.getLoadSteps().put(
-                            LoadViewModel.StepType.DOWNLOAD,
-                            new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, new Bundle())
-                    );
-                    LoadManager.startDownloadFromUri(getApplicationContext(), uri);
+                    if (loadProgress != null) {
+                        loadProgress.getLoadSteps().put(
+                                LoadViewModel.StepType.DOWNLOAD,
+                                new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, new Bundle())
+                        );
+                        LoadManager.startDownloadFromUri(getApplicationContext(), uri);
+                    }
                 }
             });
 
@@ -65,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
-        NavHostFragment navHostFragment = (NavHostFragment) binding.navHostFragment.getFragment();
+        NavHostFragment navHostFragment = binding.navHostFragment.getFragment();
         mNavController = navHostFragment.getNavController();
 
         mAppBarConfiguration =
@@ -116,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 .getInstance(this)
                 .getWorkInfosByTagLiveData(LoadManager.WORK_TAG_DOWNLOAD)
                 .observe(this, workInfos -> {
-                    if (workInfos.size() > 0) {
+                    if (!workInfos.isEmpty()) {
                         handleDownloadWork(workInfos.get(0));
                     }
                 });
@@ -125,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 .getInstance(this)
                 .getWorkInfosByTagLiveData(LoadManager.WORK_TAG_PROCESS)
                 .observe(this, workInfos -> {
-                    if (workInfos.size() > 0) {
+                    if (!workInfos.isEmpty()) {
                         handleProcessWork(workInfos.get(0));
                     }
                 });

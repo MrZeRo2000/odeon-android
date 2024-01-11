@@ -1,6 +1,5 @@
 package com.romanpulov.odeon;
 
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -67,14 +66,14 @@ public class LoadViewModel extends ViewModel {
 
     }
 
-    private Uri mUri;
+    private String mFileName;
 
-    public Uri getUri() {
-        return mUri;
+    public String getFileName() {
+        return mFileName;
     }
 
-    public void setUri(Uri mUri) {
-        this.mUri = mUri;
+    public void setFileName(String mFileName) {
+        this.mFileName = mFileName;
     }
 
     private MutableLiveData<LoadProgress> mLoadProgress;
