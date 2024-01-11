@@ -10,10 +10,10 @@ public class LoadManager {
     public static final String WORK_TAG_PROCESS = "work_tag_process";
     public static final String WORK_NAME_PROCESS = "work_name_process";
 
-
-    public static void startDownloadFromUri(Context context, Uri uri) {
+    public static void startDownloadFromUri(Context context, Uri uri, long size) {
         Data inputData = new Data.Builder()
                 .putString(DownloadWorker.PARAM_NAME_URI, uri.toString())
+                .putLong(DownloadWorker.PARAM_NAME_SIZE, size)
                 .build();
 
         Constraints constraints = (new Constraints.Builder())

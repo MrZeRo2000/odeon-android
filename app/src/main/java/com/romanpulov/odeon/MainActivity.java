@@ -3,6 +3,7 @@ package com.romanpulov.odeon;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.MenuItem;
@@ -39,16 +40,21 @@ public class MainActivity extends AppCompatActivity {
             uri -> {
                 if (uri != null) {
                     String fileName;
-                    try (Cursor returnCursor =
+                    long size = 0;
+                    try (Cursor cursor =
                                 getContentResolver().query(
                                         uri,
                                         null,
                                         null,
                                         null,
                                         null)) {
-                        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                        returnCursor.moveToFirst();
-                        fileName = returnCursor.getString(nameIndex);
+                        int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                        int sizeColumnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE);
+                        cursor.moveToFirst();
+                        fileName = cursor.getString(nameIndex);
+                        if (sizeColumnIndex > -1) {
+                            size = cursor.getLong(sizeColumnIndex);
+                        }
                         log("File name is" + fileName);
                     }
 
@@ -62,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                                 LoadViewModel.StepType.DOWNLOAD,
                                 new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, new Bundle())
                         );
-                        LoadManager.startDownloadFromUri(getApplicationContext(), uri);
+                        LoadManager.startDownloadFromUri(getApplicationContext(), uri, size);
                     }
                 }
             });

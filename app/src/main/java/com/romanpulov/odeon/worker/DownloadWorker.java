@@ -1,9 +1,7 @@
 package com.romanpulov.odeon.worker;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.work.Data;
@@ -17,6 +15,7 @@ import java.nio.file.Files;
 
 public class DownloadWorker extends Worker {
     public static final String PARAM_NAME_URI = "uri";
+    public static final String PARAM_NAME_SIZE = "size";
     public static final String PARAM_NAME_PROGRESS_TOTAL = "progress_total";
     public static final String PARAM_NAME_PROGRESS_CURRENT = "progress_current";
 
@@ -32,31 +31,6 @@ public class DownloadWorker extends Worker {
         super(context, workerParams);
     }
 
-    private long getContentSize(Uri uri) {
-        Cursor cursor = getApplicationContext().getContentResolver().query(uri, null, null, null);
-        try {
-            if (cursor.moveToFirst()) {
-                log("Moved to first cursor line");
-
-                int sizeColumnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE);
-                if (sizeColumnIndex > -1) {
-                    log("Found size column");
-                    return cursor.getLong(sizeColumnIndex);
-                } else {
-                    log("Size column not found, can't determine the size");
-                    return 0;
-                }
-            } else {
-                log("Media query returns no data, can't determine size");
-                return 0;
-            }
-        } finally {
-            if ((cursor != null) && !cursor.isClosed()) {
-                cursor.close();
-            }
-        }
-    }
-
     @NonNull
     @Override
     public Result doWork() {
@@ -64,7 +38,7 @@ public class DownloadWorker extends Worker {
             Uri uri = Uri.parse(getInputData().getString(PARAM_NAME_URI));
             log("Starting work with uri = " + uri.toString());
 
-            long contentSize = getContentSize(uri);
+            long contentSize = getInputData().getLong(PARAM_NAME_SIZE, 0);
             log("Content size:" + contentSize);
 
             setProgressAsync(new Data.Builder()
@@ -75,7 +49,8 @@ public class DownloadWorker extends Worker {
 
             try (
                     InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(uri);
-                    OutputStream outputStream = Files.newOutputStream(new File(getApplicationContext().getFilesDir(), DATA_FILE_NAME).toPath())
+                    OutputStream outputStream = Files.newOutputStream(
+                            new File(getApplicationContext().getFilesDir(), DATA_FILE_NAME).toPath())
                     )
             {
                 byte[] buf = new byte[FILE_BUF_LEN];
