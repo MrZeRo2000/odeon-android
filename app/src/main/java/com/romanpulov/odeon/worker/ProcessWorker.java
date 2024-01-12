@@ -50,10 +50,8 @@ public class ProcessWorker extends Worker {
                 dbData = reader.read(getApplicationContext(), message -> setProgressAsync(createDataWithMessage(message)));
             } catch (Exception e) {
                 log("Error reading from SQLite:" + e);
-                return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_sqlite_read_failure)));
+                return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_load_failure)));
             }
-
-            //return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_feature_not_implemented)));
         } else {
             setProgressAsync(createDataWithMessage(R.string.notification_extract));
             File file;
@@ -69,7 +67,7 @@ public class ProcessWorker extends Worker {
             try (DBReader reader = new MDBReader(file)) {
                 dbData = reader.read(getApplicationContext(), message -> setProgressAsync(createDataWithMessage(message)));
             } catch (IOException e) {
-                return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_mdb_read_failure)));
+                return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_load_failure)));
             }
         }
 
