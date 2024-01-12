@@ -11,7 +11,7 @@ android {
         minSdk 26
         targetSdk 34
         versionCode 1
-        versionName "0.0.4"
+        versionName "0.0.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,8 +37,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // lifecycle
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
 
     // navigation
     implementation 'androidx.navigation:navigation-fragment:2.7.6'
