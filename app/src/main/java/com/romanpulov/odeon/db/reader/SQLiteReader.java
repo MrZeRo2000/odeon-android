@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SQLiteReader extends SQLiteOpenHelper implements DBReader {
+public class SQLiteReader implements DBReader {
     private static final String ARTIFACTS_TABLE_NAME = "artifacts";
     private static final String ARTF_ID_COLUMN_NAME = "artf_id";
     private static final String ATTP_ID_COLUMN_NAME = "attp_id";
@@ -41,23 +41,39 @@ public class SQLiteReader extends SQLiteOpenHelper implements DBReader {
     private final List<Artist> artists = new ArrayList<>();
     private final List<Composition> compositions = new ArrayList<>();
 
-    public SQLiteReader(@Nullable Context context, String name) {
-        super(context, name, null, 1);
+    static class DBHelper extends SQLiteOpenHelper {
+        public DBHelper(@Nullable Context context, @Nullable String name) {
+            super(context, name, null, 1);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        }
+    }
+
+    private DBHelper dbHelper;
+
+    private final String name;
+
+    public SQLiteReader(String name) {
+        this.name = name;
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
-
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+    public void close() {
+        dbHelper.close();
     }
 
     @Override
     public DBData read(Context context, ProgressListener progressListener) {
-        try (SQLiteDatabase db = getReadableDatabase()) {
+        dbHelper = new DBHelper(context, this.name);
+        try (SQLiteDatabase db = dbHelper.getReadableDatabase()) {
 
             progressListener.onProgress(context.getString(R.string.notification_extract_artifacts));
             readArtifacts(db);
@@ -81,7 +97,7 @@ public class SQLiteReader extends SQLiteOpenHelper implements DBReader {
                     new String[] {"101", "102"},
                     null,
                     null,
-                    null);
+                    null)
         ) {
             while (cursor.moveToNext()) {
                 uniqueArtifactIds.add(cursor.getInt(0));
@@ -110,7 +126,7 @@ public class SQLiteReader extends SQLiteOpenHelper implements DBReader {
                         null,
                         null,
                         null,
-                        null);
+                        null)
         ) {
             while (cursor.moveToNext()) {
                 if (uniqueArtistIds.contains(cursor.getInt(0))) {
@@ -140,7 +156,7 @@ public class SQLiteReader extends SQLiteOpenHelper implements DBReader {
                         null,
                         null,
                         null,
-                        null);
+                        null)
         ) {
             while (cursor.moveToNext()) {
                 if (uniqueArtifactIds.contains(cursor.getInt(1))) {

@@ -46,7 +46,7 @@ public class ProcessWorker extends Worker {
 
         // read depending on file type
         if (password == null) {
-            try (DBReader reader = new SQLiteReader(getApplicationContext(), archiveFile.getAbsolutePath())) {
+            try (DBReader reader = new SQLiteReader(archiveFile.getAbsolutePath())) {
                 dbData = reader.read(getApplicationContext(), message -> setProgressAsync(createDataWithMessage(message)));
             } catch (Exception e) {
                 log("Error reading from SQLite:" + e);
