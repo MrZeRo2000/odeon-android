@@ -2,33 +2,23 @@ package com.romanpulov.odeon.db;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.romanpulov.odeon.R;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 /**
  * Reads data from MDB to memory data structures
  */
-public class MDBReader implements Closeable, DBReader {
+public class MDBReader implements DBReader {
     private static final String REC_ID_COLUMN_NAME = "RecID";
     private static final String MP3CDCONT_ID_COLUMN_NAME = "MP3CDContID";
     private static final String ARTISTLIST_ID_COLUMN_NAME = "ArtistListID";

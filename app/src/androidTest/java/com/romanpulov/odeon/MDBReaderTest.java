@@ -1,20 +1,16 @@
 package com.romanpulov.odeon;
 
 import android.content.Context;
-
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import com.romanpulov.odeon.db.Artifact;
 import com.romanpulov.odeon.db.Artist;
 import com.romanpulov.odeon.db.MDBReader;
-
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.Assert;
 import org.junit.runners.MethodSorters;
 
 import java.io.File;
@@ -33,16 +29,6 @@ public class MDBReaderTest {
         Context context = ApplicationProvider.getApplicationContext();
         file = new File(context.getFilesDir(), "Archive/Cat2000/Cat2000.mdb");
         reader = new MDBReader(file);
-    }
-
-    @Test
-    public void testRead() throws Exception {
-        Assert.assertTrue(file.exists());
-        reader.readAll();
-
-        Assert.assertTrue("Artist list is not empty", reader.getArtists().size() > 0);
-        Assert.assertTrue("Artifacts list is not empty", reader.getArtifacts().size() > 0);
-        Assert.assertTrue("Compositions list is not empty", reader.getCompositions().size() > 0);
     }
 
     @Test

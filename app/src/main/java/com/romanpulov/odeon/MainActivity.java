@@ -241,8 +241,10 @@ public class MainActivity extends AppCompatActivity {
                     loadSteps.remove(LoadViewModel.StepType.PROCESS);
 
                     if (loadViewModel.getLoadType().equals(LoadViewModel.LoadType.RAR)) {
+                        // revert back to requesting password in case of RAR
                         loadSteps.put(LoadViewModel.StepType.PASSWORD_REQUEST, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
                     }
+
                     String errorMessage = workInfo.getOutputData().getString(ProcessWorker.PARAM_NAME_MESSAGE);
                     if (errorMessage != null && !errorMessage.isEmpty()) {
                         DisplayMessageHelper.displayErrorMessage(this, errorMessage);
