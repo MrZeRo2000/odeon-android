@@ -1,4 +1,4 @@
-package com.romanpulov.odeon.db;
+package com.romanpulov.odeon.db.reader;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +8,7 @@ import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Row;
 import com.healthmarketscience.jackcess.Table;
 import com.romanpulov.odeon.R;
+import com.romanpulov.odeon.db.*;
 
 import java.io.File;
 import java.io.IOException;

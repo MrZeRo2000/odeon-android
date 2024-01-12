@@ -1,6 +1,7 @@
-package com.romanpulov.odeon.db;
+package com.romanpulov.odeon.db.reader;
 
 import android.content.Context;
+import com.romanpulov.odeon.db.DBData;
 
 import java.io.Closeable;
 import java.io.IOException;

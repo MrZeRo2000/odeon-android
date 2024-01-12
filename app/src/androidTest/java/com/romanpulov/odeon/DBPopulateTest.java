@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.romanpulov.odeon.db.AppDatabase;
 import com.romanpulov.odeon.db.ArtifactType;
 import com.romanpulov.odeon.db.DBManager;
-import com.romanpulov.odeon.db.MDBReader;
+import com.romanpulov.odeon.db.reader.MDBReader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;

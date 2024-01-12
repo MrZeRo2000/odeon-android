@@ -16,6 +16,7 @@
 
     <string name="error_loader_archive_file_not_exists">Archive file does not exist</string>
     <string name="error_loader_extract">Archive extract error</string>
+    <string name="error_sqlite_read_failure">Error reading SQLite</string>
     <string name="error_mdb_read_failure">Error reading MDB</string>
     <string name="error_unknown_file_type">Unknown file type</string>
     <string name="error_feature_not_implemented">Feature not implemented</string>

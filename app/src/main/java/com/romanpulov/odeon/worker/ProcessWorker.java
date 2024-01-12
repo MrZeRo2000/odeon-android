@@ -10,6 +10,9 @@ import com.github.junrar.Junrar;
 import com.github.junrar.exception.RarException;
 import com.romanpulov.odeon.R;
 import com.romanpulov.odeon.db.*;
+import com.romanpulov.odeon.db.reader.DBReader;
+import com.romanpulov.odeon.db.reader.MDBReader;
+import com.romanpulov.odeon.db.reader.SQLiteReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +46,14 @@ public class ProcessWorker extends Worker {
 
         // read depending on file type
         if (password == null) {
-            return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_feature_not_implemented)));
+            try (DBReader reader = new SQLiteReader(getApplicationContext(), archiveFile.getAbsolutePath())) {
+                dbData = reader.read(getApplicationContext(), message -> setProgressAsync(createDataWithMessage(message)));
+            } catch (Exception e) {
+                log("Error reading from SQLite:" + e);
+                return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_sqlite_read_failure)));
+            }
+
+            //return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_feature_not_implemented)));
         } else {
             setProgressAsync(createDataWithMessage(R.string.notification_extract));
             File file;
