@@ -79,7 +79,7 @@ public class LoadFragment extends Fragment {
                     loadProgress.getLoadSteps().put(LoadViewModel.StepType.PASSWORD_REQUEST, passwordRequestLoadStep);
                     loadProgress.getLoadSteps().put(LoadViewModel.StepType.PROCESS, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, null));
                     mLoadViewModel.getLoadProgress().postValue(loadProgress);
-                    LoadManager.startProcessWithPassword(requireContext(), v.getText().toString());
+                    LoadManager.startProcessWithPassword(requireContext(), mLoadViewModel.getFileExtension(), v.getText().toString());
                 }
                 InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);

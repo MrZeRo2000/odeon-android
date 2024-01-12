@@ -60,15 +60,20 @@ public class MainActivity extends AppCompatActivity {
 
                     LoadViewModel loadViewModel = (new ViewModelProvider(this)).get(LoadViewModel.class);
                     loadViewModel.setFileName(fileName);
-                    mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
 
-                    LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
-                    if (loadProgress != null) {
-                        loadProgress.getLoadSteps().put(
-                                LoadViewModel.StepType.DOWNLOAD,
-                                new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, new Bundle())
-                        );
-                        LoadManager.startDownloadFromUri(getApplicationContext(), uri, size);
+                    if (loadViewModel.getLoadType().equals(LoadViewModel.LoadType.UNKNOWN)) {
+                        DisplayMessageHelper.displayErrorMessage(this, getString(R.string.error_unknown_file_type));
+                    } else {
+                        mNavController.navigate(R.id.action_artistsFragment_to_loadFragment);
+
+                        LoadViewModel.LoadProgress loadProgress = loadViewModel.getLoadProgress().getValue();
+                        if (loadProgress != null) {
+                            loadProgress.getLoadSteps().put(
+                                    LoadViewModel.StepType.DOWNLOAD,
+                                    new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, new Bundle())
+                            );
+                            LoadManager.startDownloadFromUri(getApplicationContext(), uri, size, loadViewModel.getFileExtension());
+                        }
                     }
                 }
             });
@@ -186,8 +191,21 @@ public class MainActivity extends AppCompatActivity {
                     loadSteps.put(LoadViewModel.StepType.DOWNLOAD,
                             new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.COMPLETED, params)
                     );
-                    loadProgress.getLoadSteps().put(LoadViewModel.StepType.PASSWORD_REQUEST, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
-                    DisplayMessageHelper.displayInfoMessage(this, getString(R.string.notification_file_downloaded));
+
+                    switch (loadViewModel.getLoadType()) {
+                        case RAR:
+                            loadProgress.getLoadSteps().put(
+                                    LoadViewModel.StepType.PASSWORD_REQUEST,
+                                    new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
+                            DisplayMessageHelper.displayInfoMessage(this, getString(R.string.notification_file_downloaded));
+                            break;
+                        case SQLITE:
+                            loadProgress.getLoadSteps().put(LoadViewModel.StepType.PROCESS, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.RUNNING, null));
+                            LoadManager.startProcessWithPassword(this, loadViewModel.getFileExtension(), null);
+                            break;
+                        default:
+                            DisplayMessageHelper.displayErrorMessage(this, getString(R.string.error_unknown_file_type));
+                    }
                 } else if (workInfo.getState() == WorkInfo.State.CANCELLED) {
                     log("Cancelled");
                     loadProgress = new LoadViewModel.LoadProgress();
@@ -221,7 +239,10 @@ public class MainActivity extends AppCompatActivity {
 
                 } else if (workInfo.getState() == WorkInfo.State.FAILED) {
                     loadSteps.remove(LoadViewModel.StepType.PROCESS);
-                    loadSteps.put(LoadViewModel.StepType.PASSWORD_REQUEST, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
+
+                    if (loadViewModel.getLoadType().equals(LoadViewModel.LoadType.RAR)) {
+                        loadSteps.put(LoadViewModel.StepType.PASSWORD_REQUEST, new LoadViewModel.LoadStep(LoadViewModel.LoadStatus.WAITING, null));
+                    }
                     String errorMessage = workInfo.getOutputData().getString(ProcessWorker.PARAM_NAME_MESSAGE);
                     if (errorMessage != null && !errorMessage.isEmpty()) {
                         DisplayMessageHelper.displayErrorMessage(this, errorMessage);

@@ -10,10 +10,11 @@ public class LoadManager {
     public static final String WORK_TAG_PROCESS = "work_tag_process";
     public static final String WORK_NAME_PROCESS = "work_name_process";
 
-    public static void startDownloadFromUri(Context context, Uri uri, long size) {
+    public static void startDownloadFromUri(Context context, Uri uri, long size, String extension) {
         Data inputData = new Data.Builder()
                 .putString(DownloadWorker.PARAM_NAME_URI, uri.toString())
                 .putLong(DownloadWorker.PARAM_NAME_SIZE, size)
+                .putString(DownloadWorker.PARAM_NAME_EXTENSION, extension)
                 .build();
 
         Constraints constraints = (new Constraints.Builder())
@@ -31,8 +32,9 @@ public class LoadManager {
                 .enqueueUniqueWork(WORK_NAME_DOWNLOAD, ExistingWorkPolicy.REPLACE, request);
     }
 
-    public static void startProcessWithPassword(Context context, String password) {
+    public static void startProcessWithPassword(Context context, String extension, String password) {
         Data inputData = new Data.Builder()
+                .putString(ProcessWorker.PARAM_NAME_EXTENSION, extension)
                 .putString(ProcessWorker.PARAM_NAME_PASSWORD, password)
                 .build();
 

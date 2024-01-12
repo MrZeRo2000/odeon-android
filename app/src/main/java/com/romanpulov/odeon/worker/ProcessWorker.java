@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class ProcessWorker extends Worker {
     public static final String PARAM_NAME_PASSWORD = "password";
     public static final String PARAM_NAME_MESSAGE = "message";
+    public static final String PARAM_NAME_EXTENSION = "extension";
 
     private static void log(String message) {
         Log.d(ProcessWorker.class.getSimpleName(), message);
@@ -33,7 +34,9 @@ public class ProcessWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        File archiveFile = new File(getApplicationContext().getFilesDir(), DownloadWorker.DATA_FILE_NAME);
+        File archiveFile = new File(
+                getApplicationContext().getFilesDir(),
+                DownloadWorker.DATA_FILE_NAME + "." + getInputData().getString(PARAM_NAME_EXTENSION));
         if (!archiveFile.exists()) {
             return Result.failure(createDataWithMessage(getApplicationContext().getString(R.string.error_loader_archive_file_not_exists)));
         }

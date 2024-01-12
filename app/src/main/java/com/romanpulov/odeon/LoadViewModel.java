@@ -6,9 +6,39 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class LoadViewModel extends ViewModel {
+    public enum LoadType {
+        RAR,
+        SQLITE,
+        UNKNOWN;
+
+        private static final String STRING_RAR = "rar";
+        private static final String STRING_SQLITE = "db";
+
+        public static LoadType fromString(String s) {
+            if (s.equals(STRING_RAR)) {
+                return LoadType.RAR;
+            } else if (s.equals(STRING_SQLITE)) {
+                return LoadType.SQLITE;
+            } else {
+                return LoadType.UNKNOWN;
+            }
+        }
+
+        public static String getExtension(LoadType loadType) {
+            switch (loadType) {
+                case RAR:
+                    return STRING_RAR;
+                case SQLITE:
+                    return STRING_SQLITE;
+                default:
+                    return "unknown";
+            }
+        }
+    }
 
     public enum LoadStatus {
         COMPLETED,
@@ -26,7 +56,6 @@ public class LoadViewModel extends ViewModel {
 
     public static final String PARAM_NAME_VALUE = "param_name_value";
     public static final String PARAM_NAME_MAX_VALUE = "param_name_max_value";
-    public static final String PARAM_NAME_PASSWORD = "param_name_password";
 
     public static class LoadStep {
         public final LoadStatus status;
@@ -74,6 +103,22 @@ public class LoadViewModel extends ViewModel {
 
     public void setFileName(String mFileName) {
         this.mFileName = mFileName;
+        String extension = mFileName.substring(mFileName.lastIndexOf(".") + 1).toLowerCase(Locale.ROOT);
+        setLoadType(LoadType.fromString(extension));
+    }
+
+    private LoadType mLoadType = LoadType.UNKNOWN;
+
+    public LoadType getLoadType() {
+        return mLoadType;
+    }
+
+    public void setLoadType(LoadType mLoadType) {
+        this.mLoadType = mLoadType;
+    }
+
+    public String getFileExtension() {
+        return LoadType.getExtension(mLoadType);
     }
 
     private MutableLiveData<LoadProgress> mLoadProgress;

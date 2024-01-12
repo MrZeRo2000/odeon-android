@@ -16,10 +16,11 @@ import java.nio.file.Files;
 public class DownloadWorker extends Worker {
     public static final String PARAM_NAME_URI = "uri";
     public static final String PARAM_NAME_SIZE = "size";
+    public static final String PARAM_NAME_EXTENSION = "extension";
     public static final String PARAM_NAME_PROGRESS_TOTAL = "progress_total";
     public static final String PARAM_NAME_PROGRESS_CURRENT = "progress_current";
 
-    public static final String DATA_FILE_NAME = "data.rar";
+    public static final String DATA_FILE_NAME = "data";
 
     private static final int FILE_BUF_LEN = 1024;
 
@@ -41,6 +42,9 @@ public class DownloadWorker extends Worker {
             long contentSize = getInputData().getLong(PARAM_NAME_SIZE, 0);
             log("Content size:" + contentSize);
 
+            String extension = getInputData().getString(PARAM_NAME_EXTENSION);
+            log("Extension:" + extension);
+
             setProgressAsync(new Data.Builder()
                     .putLong(PARAM_NAME_PROGRESS_TOTAL, contentSize)
                     .putLong(PARAM_NAME_PROGRESS_CURRENT, 0)
@@ -50,7 +54,7 @@ public class DownloadWorker extends Worker {
             try (
                     InputStream inputStream = getApplicationContext().getContentResolver().openInputStream(uri);
                     OutputStream outputStream = Files.newOutputStream(
-                            new File(getApplicationContext().getFilesDir(), DATA_FILE_NAME).toPath())
+                            new File(getApplicationContext().getFilesDir(), DATA_FILE_NAME + "." + extension).toPath())
                     )
             {
                 byte[] buf = new byte[FILE_BUF_LEN];
