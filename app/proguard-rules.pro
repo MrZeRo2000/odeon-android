@@ -37,3 +37,7 @@
 -dontwarn org.apache.log4j.Logger
 -dontwarn org.apache.log4j.Priority
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+
+# this should not be here, a workaround
+-keep class androidx.work.** { *; }
+-keep class com.romanpulov.odeon.db.** { *; }
