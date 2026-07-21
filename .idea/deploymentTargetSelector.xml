@@ -16,6 +16,9 @@
       <SelectionState runConfigName="odeon-android.com.romanpulov.odeon.app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="com_romanpulov_odeon.app">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

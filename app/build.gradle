@@ -1,17 +1,22 @@
+import com.android.build.api.artifact.SingleArtifact
+
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
 plugins {
     id 'com.android.application'
 }
 
 android {
     namespace = "com.romanpulov.odeon"
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         applicationId "com.romanpulov.odeon"
         minSdk 26
-        targetSdk 36
+        targetSdk 37
         versionCode 1
-        versionName "0.0.8"
+        versionName "0.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,29 +33,39 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        applicationVariants.all{
-                // this method is use to rename your release apk only
-            variant ->
-                variant.outputs.each {
-                        // on below line we are setting a name to our apk
-                    output ->
-                        // on below line we are specifying our app name.
-                        project.ext { appName = 'odeon_' }
-                        // on below line we are adding the version to our apk file name.
-                        def version = variant.versionName.replace(".", "_")
-                        // on below line we are creating a new name for our apk.
-                        def newName = output.outputFile.name
-                        // on below line we are replacing our previous name with our app name.
-                        newName = newName.replace("app-", "$project.ext.appName-")
-                        // on below line we are replacing -release with our formatted version
-                        newName = newName.replace("-release", version)
-                        // at last we are setting our apk name to it.
-                        output.outputFileName  = newName
-                }
-        }
     }
     buildFeatures {
         viewBinding true
+    }
+}
+
+// The old applicationVariants API was removed in AGP 8+. The new Variant API cannot
+// rename the produced APK in place (Studio deploys by the default name), so we copy
+// the built release APK to a versioned name under build/outputs/renamed_apk/.
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        def capName = variant.name.substring(0, 1).toUpperCase() + variant.name.substring(1)
+        def versionNameProvider = variant.outputs.first().versionName
+        def apkDir = variant.artifacts.get(SingleArtifact.APK.INSTANCE)
+        def artifactsLoader = variant.artifacts.getBuiltArtifactsLoader()
+        // Copy imperatively in doLast rather than via a Copy task: the destination is
+        // AGP's own APK output directory, and declaring it as a task output would clash
+        // with AGP's downstream tasks that read that directory.
+        def copyRenamedApk = tasks.register("copyRenamedApk${capName}") {
+            inputs.dir(apkDir)
+            doLast {
+                def srcFile = new File(artifactsLoader.load(apkDir.get()).elements.first().outputFile)
+                def destFile = new File(srcFile.parentFile,
+                        "odeon_${versionNameProvider.get().replace('.', '_')}.apk")
+                Files.copy(srcFile.toPath(), destFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING)
+                logger.lifecycle("Created renamed APK: ${destFile}")
+            }
+        }
+        // Run the copy automatically after the release APK is assembled.
+        tasks.matching { it.name == "assemble${capName}".toString() }.configureEach {
+            finalizedBy(copyRenamedApk)
+        }
     }
 }
 
